@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+    xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+    id="WebApp_ID" version="3.1">
+  <display-name>scm.web</display-name>
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>classpath:applicationContext.xml</param-value>
+  </context-param>
+  <filter>
+    <filter-name>encodingFilter</filter-name>
+    <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+    <init-param>
+      <param-name>encoding</param-name>
+      <param-value>UTF-8</param-value>
+    </init-param>
+    <init-param>
+      <param-name>forceEncoding</param-name>
+      <param-value>true</param-value>
+    </init-param>
+  </filter>
+  <filter>
+    <filter-name>loginFilter</filter-name>
+    <filter-class>pers.zcc.scm.common.frame.LoginFilter</filter-class>
+    <init-param>
+      <param-name>urlWhiteList</param-name>
+      <param-value>/user/regist;/user/login;/user/logout;</param-value>
+    </init-param>
+  </filter>
+  <filter>
+    <filter-name>CORSFilter</filter-name>
+    <filter-class>pers.zcc.scm.common.frame.CORSFilter</filter-class>
+    <init-param>
+      <param-name>origin</param-name>
+      <param-value>http://localhost:8080</param-value>
+    </init-param>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>encodingFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>loginFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>CORSFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  
+  <listener>
+    <listener-class>pers.zcc.scm.common.frame.SlfContextLoaderListener</listener-class>
+  </listener>
+  
+  <listener>
+    <listener-class>pers.zcc.scm.common.frame.SlfHttpSessionListener</listener-class>
+  </listener>
+  
+  <servlet>
+    <servlet-name>CXFService</servlet-name>
+    <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>CXFService</servlet-name>
+    <url-pattern>/services/*</url-pattern>
+  </servlet-mapping>
+  
+   <servlet-mapping>
+    <servlet-name>CXFService</servlet-name>
+    <url-pattern>/publicservices/*</url-pattern>
+  </servlet-mapping>
+  
+  <session-config>
+    <session-timeout>30</session-timeout>
+	<cookie-config>
+	  <http-only>true</http-only>
+	</cookie-config>
+  </session-config>
+  
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+    <welcome-file>index.htm</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
+    <welcome-file>default.html</welcome-file>
+    <welcome-file>default.htm</welcome-file>
+    <welcome-file>default.jsp</welcome-file>
+  </welcome-file-list>
+  
+  
+  
+</web-app>

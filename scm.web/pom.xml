@@ -1,0 +1,106 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>pers.zhangchangchun</groupId>
+    <artifactId>scm</artifactId>
+    <version>${project.version}</version>
+  </parent>
+  <artifactId>scm.web</artifactId>
+  <name>scm.common</name>
+  <packaging>war</packaging>
+  <dependencies>
+    <dependency>
+      <groupId>pers.zhangchangchun</groupId>
+      <artifactId>scm.common</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    
+        <dependency>
+        <groupId>org.apache.shardingsphere</groupId>
+        <artifactId>shardingsphere-jdbc-core</artifactId>
+    </dependency>
+    
+    <dependency>
+        <groupId>org.apache.shardingsphere</groupId>
+        <artifactId>shardingsphere-jdbc-core-spring-namespace</artifactId>
+    </dependency>
+  </dependencies>
+  
+  <build>
+    <finalName>scm.web</finalName>
+     <resources>
+        <resource>
+            <directory>src/main/java</directory>
+            <includes>
+              <include>**/*.properties</include>
+              <include>**/*.xml</include>
+            </includes>
+        </resource>
+
+        <resource>
+            <directory >
+                src/main/resources
+            </directory>
+            <includes >
+             <include>**/*.*</include>
+            </includes>
+        </resource>
+    </resources>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+                <execution>
+                    <id>copy-dependencies</id>
+                    <phase>clean</phase>
+                    <goals>
+                        <goal>copy-dependencies</goal>
+                    </goals>
+                    <configuration>
+                        <!--${project.build.directory} class的输出目录不做设置的话默认代表项目根目录的target目录；
+                                                           也可以使用“自定义文件夹/自定义文件夹 例如：a/b”，也可以使用绝对路径如：“D:\test” -->
+                        <outputDirectory>${project.build.directory}/scm.web/lib</outputDirectory>
+                        <excludeTransitive>false</excludeTransitive>
+                        <stripVersion>false</stripVersion>
+                        <includeScope>system</includeScope>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+                <source>${maven.compiler.source}</source>
+                <target>${maven.compiler.target}</target>
+                <encoding>UTF-8</encoding>
+            </configuration>
+        </plugin>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-war-plugin</artifactId>
+            <configuration> 
+                <encoding>${project.build.sourceEncoding}</encoding>  
+                <warName>scm.web</warName>  
+                <webappDirectory>${project.build.directory}/scm.web</webappDirectory>       
+                <warSourceDirectory>${basedir}/src/main/webapp</warSourceDirectory>  
+                <webResources> 
+                    <resource> 
+                      <directory>${project.build.directory}/scm.web/lib</directory>  
+                      <targetPath>WEB-INF/lib/</targetPath>  
+                      <includes> 
+                        <include>**/*.jar</include> 
+                      </includes> 
+                    </resource> 
+                </webResources> 
+            </configuration>
+        </plugin>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-release-plugin</artifactId> 
+        </plugin>
+    </plugins>
+  </build>
+  
+</project>

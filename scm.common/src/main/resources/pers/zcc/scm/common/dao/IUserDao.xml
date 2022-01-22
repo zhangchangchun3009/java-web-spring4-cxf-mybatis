@@ -34,7 +34,7 @@
                 u.created_time as createdTimeU,
                 u.last_updated_by as lastUpdatedByU,
                 u.last_updated_time as lastUpdatedTimeU
-        FROM plm.plm_user u
+        FROM sys_user u
 		WHERE 1=1
 		     <if test="entity.userId != 0">
 		     and u.user_id = #{entity.userId}
@@ -59,7 +59,7 @@
                 u.created_time as createdTimeU,
                 u.last_updated_by as lastUpdatedByU,
                 u.last_updated_time as lastUpdatedTimeU
-        FROM plm.plm_user u
+        FROM sys_user u
         WHERE 1=1
              <if test="entity.userId != 0">
              and u.user_id = #{entity.userId}
@@ -72,7 +72,7 @@
     <select id="findRoles" resultType = "pers.zcc.scm.common.user.vo.RoleVO">
         select r.role_id as roleId,
                 r.role_name as roleName
-                from plm_user_role ur inner join plm_role r on ur.role_id = r.role_id
+                from sys_user_role ur inner join sys_role r on ur.role_id = r.role_id
                 where ur.user_id = #{userId}
     </select>
     
@@ -80,11 +80,11 @@
 		SELECT 
 		    count(1)
 		FROM
-		    plm_user_role ur
+		    sys_user_role ur
 		        INNER JOIN
-		    plm_role_resource rr
+		    sys_role_resource rr
 		        INNER JOIN
-		    plm_resource r
+		    sys_resource r
 		WHERE
 		    ur.role_id = rr.role_id
 	        AND ur.user_id = #{user.userId}
@@ -101,12 +101,12 @@
     </select>
     
     <insert id="insert" parameterType="pers.zcc.scm.common.user.vo.UserVO">
-        insert into plm_user(user_id,user_name,password,user_type,parking_lot_code,created_by,created_time)values(
+        insert into sys_user(user_id,user_name,password,user_type,parking_lot_code,created_by,created_time)values(
         #{user.userId},#{user.userName},#{user.password},#{user.userType},#{user.parkingLotCode},'-1',now())
     </insert>
     
     <delete id="delete" parameterType="pers.zcc.scm.common.user.vo.UserVO">
-        delete from plm_user where id = #{entity.id}
+        delete from sys_user where id = #{entity.id}
     </delete>
 
 </mapper>

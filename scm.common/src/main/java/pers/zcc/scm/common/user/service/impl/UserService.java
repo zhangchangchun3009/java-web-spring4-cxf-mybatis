@@ -182,6 +182,9 @@ public class UserService implements IUserService {
         return result.success(session.getId());
     }
 
+    /**
+     * init user:root  password:admin
+     */
     @Override
     public Response<Map<String, Object>> loginByToken(HttpServletRequest request, HttpServletResponse response,
             UserVO param) {

@@ -85,12 +85,4 @@ public class UUIDHexGenerator {
             return counter++;
         }
     }
-
-    // public static void main(String[] args) {
-    // UUIDHexGenerator uuidHexGenerator = new UUIDHexGenerator();
-    // String generate = uuidHexGenerator.generate();
-    // System.out.println(generate);
-    // int ip2 = uuidHexGenerator.getIP();
-    // System.out.println(ip2);
-    // }
 }

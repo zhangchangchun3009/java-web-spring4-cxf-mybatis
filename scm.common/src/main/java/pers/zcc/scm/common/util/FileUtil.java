@@ -125,8 +125,4 @@ public class FileUtil {
 
     }
 
-    public static void main(String[] args) {
-        System.out.println(deleteFileByForkJoinFrame(new File("D:\\hkpic\\2021年\\11月")));
-    }
-
 }

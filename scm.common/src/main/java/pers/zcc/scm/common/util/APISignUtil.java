@@ -11,8 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pers.zcc.scm.common.vo.PageVO;
-
 public class APISignUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(APISignUtil.class);
 
@@ -126,48 +124,9 @@ public class APISignUtil {
     }
 
     public static String getAppPublicKey(String appId) {
-        if (EnvironmentProps.getApplicationProp("application.common.pcms.appId").equalsIgnoreCase(appId)) {
-            return EnvironmentProps.getApplicationProp("application.common.pcms.appPublicKey");
+        if (EnvironmentProps.getApplicationProp("application.appId").equalsIgnoreCase(appId)) {
+            return EnvironmentProps.getApplicationProp("application.appPublicKey");
         }
         return EnvironmentProps.getApplicationProp(appId + ".appPublicKey");
-    }
-
-    public static void main(String[] args) {
-        Object[] parameters = new Object[3];
-        parameters[0] = "2021-05-01 00:00:00";
-        parameters[1] = "2021-06-15 00:00:00";
-        PageVO pagevo = new PageVO();
-        pagevo.setPageNum(1);
-        pagevo.setPageSize(5);
-        parameters[2] = pagevo;
-        long timestamp = System.currentTimeMillis();
-        System.out.println("timestamp:" + timestamp);
-        String sign = "";
-        String appId = "";
-        String appPublicKey = "";
-        String appSecret = "";
-        try {
-            appId = "www.srcloud.com";
-            appPublicKey = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCwOqcFCgrXYrFmuC61WUw2Vue7jcwAk4ViIBi4j2/3sh88eD+kRooEo1fxqEBxJNMFFx9ufQ8ZuHHU7slzdooje7VwMRsobwa3Q97a6XDXliXkj3/1O4CLT3Npxjj7tOpZwbDQGd1I/bR2pVOkha016vmKsyfbah8h5tll4E/MaQIDAQAB";
-            appSecret = "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBALA6pwUKCtdisWa4LrVZTDZW57uNzACThWIgGLiPb/eyHzx4P6RGigSjV/GoQHEk0wUXH259Dxm4cdTuyXN2iiN7tXAxGyhvBrdD3trpcNeWJeSPf/U7gItPc2nGOPu06lnBsNAZ3Uj9tHalU6SFrTXq+YqzJ9tqHyHm2WXgT8xpAgMBAAECgYEAkE12tgmjFvsZiKMInDai0VwYJNvXUCF79v2RQI8zf/+61Cki88FPAr0+JgM/wWYF5QUqF68Pzl/Z1iIxkvpd4ZOLYYxy9xrCV3E0olKqjietaTA+gM4RvHT/I1qxYOxMdrh02HzXsRvgDFKu6QYOZmtvTfYUcoluykUYYs/rQgECQQDkOR6CEiNpzPZCns74VCpZnvvaxLw7SsMCiU+8hu5aCF1VwDLJcsxOE+9waSkOQwxPfjntjlxcMmVuMQCXOBmlAkEAxa2GinQDRpezoXqSjCWG1Vq2MFgRtXlblDmEnpYjMg92XkxuXXeMd/q1EOmWO8SgZrZsh3VGvD+vjbYYxDeEdQJAZwEsttIO77KVNw5MJaJ/FsH9tAh1WGFu0Jc+yL0xmKsLzScZBPjuIxM2T0r3P7udM8epx4EoSGhqhShStu2YDQJAESgWXT3kauQPuxwgS/mV0j6lQVzjbJSz1hGH6RuuwlGFPHn1ujb+AgvIW0dqupU+Nqvuj3MmSIBehDYhwCXxYQJBAKMas8KqT6SjyquRKNMrDGYl2AQq74K8oPtgQO03r3au2nEyXpqo9M2+BxY87pT3frI5gN71J9XSwlHdLAzmj1U=";
-            // Map<String, Object> map = RSAUtil.genKeyPair();
-            // appPublicKey = RSAUtil.getPublicKey(map);
-            // appSecret = RSAUtil.getPrivateKey(map);
-            System.out.println("publicKey:" + appPublicKey);
-            System.out.println("privateKey:" + appSecret);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            sign = sign(appId, timestamp, parameters, appSecret);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        System.out.println("sign:" + sign);
-        try {
-            System.out.println(verify(appId, timestamp, parameters, sign, appPublicKey));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }

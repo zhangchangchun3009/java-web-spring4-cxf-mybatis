@@ -30,7 +30,6 @@ public class AuthorizationUtil {
     private static String appPublicKey;
 
     static {
-        // 这里使用了pcms应用公私钥，扩展服务器时要注意一些问题
         appSecret = EnvironmentProps.getApplicationProp("application.appSecret");
         appPublicKey = EnvironmentProps.getApplicationProp("application.appPublicKey");
     }

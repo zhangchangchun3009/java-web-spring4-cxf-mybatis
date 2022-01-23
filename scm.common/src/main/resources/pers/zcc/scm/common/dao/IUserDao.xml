@@ -8,7 +8,6 @@
 	    <result column="userName" property="userName"/>
 	    <result column="password" property="password"/>
 	    <result column="userType" property="userType"/>
-	    <result column="parkingLotCode" property="parkingLotCode"/>
 	    <result column="createdByU" property="createdBy"/>
 	    <result column="createdTimeU" property="createdTime"/>
 	    <result column="lastUpdatedByU" property="lastUpdatedBy"/>
@@ -26,7 +25,6 @@
         resultMap="userRoleMap">
         SELECT  u.id as idU,
                 u.user_id as userId,
-                u.parking_lot_code as parkingLotCode,
                 u.user_name as userName,
                 u.password,
                 u.user_type as userType,
@@ -52,7 +50,6 @@
         resultMap="userRoleMap">
         SELECT  u.id as idU,
                 u.user_id as userId,
-                u.parking_lot_code as parkingLotCode,
                 u.user_name as userName,
                 u.user_type as userType,
                 u.created_by as createdByU,
@@ -101,8 +98,8 @@
     </select>
     
     <insert id="insert" parameterType="pers.zcc.scm.common.user.vo.UserVO">
-        insert into sys_user(user_id,user_name,password,user_type,parking_lot_code,created_by,created_time)values(
-        #{user.userId},#{user.userName},#{user.password},#{user.userType},#{user.parkingLotCode},'-1',now())
+        insert into sys_user(user_id,user_name,password,user_type,created_by,created_time)values(
+        #{user.userId},#{user.userName},#{user.password},#{user.userType},'-1',now())
     </insert>
     
     <delete id="delete" parameterType="pers.zcc.scm.common.user.vo.UserVO">

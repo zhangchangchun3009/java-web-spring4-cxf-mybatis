@@ -16,8 +16,8 @@ public class MessageCacheService {
         channels.put(unitId, channel);
     }
 
-    public void remove(String parkId) {
-        channels.remove(parkId);
+    public void remove(String unitId) {
+        channels.remove(unitId);
     }
 
     public void remove(Channel channel) {

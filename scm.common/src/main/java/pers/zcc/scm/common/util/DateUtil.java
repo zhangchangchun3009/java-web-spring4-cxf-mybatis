@@ -1,6 +1,3 @@
-/*
- * Copyright 2021-2029 tiangong All Rights Reserved
- */
 package pers.zcc.scm.common.util;
 
 import java.text.SimpleDateFormat;

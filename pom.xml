@@ -13,6 +13,7 @@
       <maven.compiler.target>1.8</maven.compiler.target>
       <cxf.version>3.2.5</cxf.version>
       <spring.version>5.2.12.RELEASE</spring.version>
+      <tomcat.version>8.0.48</tomcat.version>
   </properties>
   
   <modules>
@@ -333,6 +334,22 @@
         <groupId>io.reactivex.rxjava2</groupId>
         <artifactId>rxjava</artifactId>
         <version>2.2.21</version>
+    </dependency>
+    
+    <dependency>
+        <groupId>org.apache.tomcat.embed</groupId>
+        <artifactId>tomcat-embed-core</artifactId>
+        <version>${tomcat.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.tomcat.embed</groupId>
+        <artifactId>tomcat-embed-jasper</artifactId>
+        <version>${tomcat.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.tomcat.embed</groupId>
+        <artifactId>tomcat-embed-logging-juli</artifactId>
+        <version>${tomcat.version}</version>
     </dependency>
     
     </dependencies>

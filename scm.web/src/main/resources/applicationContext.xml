@@ -28,7 +28,7 @@
    <context:component-scan base-package="pers.zcc" />
    <context:annotation-config />
    <aop:aspectj-autoproxy proxy-target-class="true"/>
-   <context:property-placeholder ignore-unresolvable="true" location="classpath:application.properties"/>
+   <context:property-placeholder ignore-unresolvable="true" location="classpath:conf/${spring.profiles.active}/application.properties"/>
    
    <import resource="classpath*:/config/*.services.xml" />
    <import resource="classpath*:/config/*.beans.xml" />

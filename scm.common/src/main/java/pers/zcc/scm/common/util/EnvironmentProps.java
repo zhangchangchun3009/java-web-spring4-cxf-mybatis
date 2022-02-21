@@ -1,24 +1,28 @@
 package pers.zcc.scm.common.util;
 
+import java.io.FileInputStream;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import org.apache.commons.collections4.map.HashedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.support.PropertiesLoaderUtils;
 
 public class EnvironmentProps {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EnvironmentProps.class);
 
-    private static Map<String, String> propCache = new HashedMap<>(32);
+    private static Map<String, String> propCache = new HashMap<>(32);
+
+    private static String activeProfile = System.getProperty("spring.profiles.active");
+
+    private static String baseDir = EnvironmentProps.class.getClassLoader().getResource("").getPath();
 
     public static Properties getProperties(String path) {
         Properties properties = new Properties();
         try {
-            properties = PropertiesLoaderUtils.loadAllProperties(path, EnvironmentProps.class.getClassLoader());
+            properties.load(new FileInputStream(path));
         } catch (Exception e) {
             LOGGER.error("loadAllProperties e,", e);
             return properties;
@@ -43,7 +47,7 @@ public class EnvironmentProps {
     }
 
     public static String getApplicationProp(String key) {
-        return getProperty("application.properties", key);
+        return getProperty(baseDir + "conf/" + activeProfile + "/application.properties", key);
     }
 
 }

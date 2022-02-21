@@ -40,6 +40,30 @@
     
   </dependencies>
   
+  <profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <profile.env>dev</profile.env>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>pro</id>
+            <properties>
+                <profile.env>pro</profile.env>
+            </properties>
+        </profile>
+        <profile>
+            <id>test</id>
+            <properties>
+                <profile.env>test</profile.env>
+            </properties>
+        </profile>
+  </profiles>
+  
   <build>
     <finalName>scm.web</finalName>
      <resources>
@@ -58,7 +82,16 @@
             <includes >
              <include>**/*.*</include>
             </includes>
+            <excludes>
+                <exclude>conf/**</exclude>
+            </excludes>
         </resource>
+        
+        <resource>
+            <directory>src/main/resources/conf/${profile.env}</directory>
+            <targetPath>conf/${profile.env}</targetPath>
+        </resource>
+        
     </resources>
     <plugins>
         <plugin>

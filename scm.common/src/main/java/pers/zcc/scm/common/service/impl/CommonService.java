@@ -83,7 +83,7 @@ public class CommonService implements ICommonService {
         } catch (IOException e) {
             LOGGER.error("commonService getTaskFile failed, ", e);
             response.reset();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "getTaskFile failed");
         }
     }
 

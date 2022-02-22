@@ -21,6 +21,17 @@ on:
     - cron: '38 20 * * 4'
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: Install maven tool
+        run: |
+          sudo apt-get update
+          sudo apt-get install maven
+          sudo mvn -version
+          
   analyze:
     name: Analyze
     runs-on: ubuntu-latest
@@ -63,7 +74,7 @@ jobs:
     #    uses a compiled language
 
     - run: |
-       maven clean install -P dev
+       mvn compile -P dev
      # make release
 
     - name: Perform CodeQL Analysis

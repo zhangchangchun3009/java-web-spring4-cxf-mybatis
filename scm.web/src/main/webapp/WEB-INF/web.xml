@@ -25,7 +25,7 @@
     <filter-class>pers.zcc.scm.common.frame.LoginFilter</filter-class>
     <init-param>
       <param-name>urlWhiteList</param-name>
-      <param-value>/user/regist;/user/login;/user/logout;</param-value>
+      <param-value>/user/regist;/user/login;/user/logout;/pay/alipayService/alipayNotify;/pay/wechatpayService/wechatpayNotify;</param-value>
     </init-param>
   </filter>
   <filter>
@@ -57,6 +57,26 @@
   <listener>
     <listener-class>pers.zcc.scm.common.frame.SlfHttpSessionListener</listener-class>
   </listener>
+  
+  <servlet>
+    <servlet-name>AlipayNotifyServlet</servlet-name>
+    <servlet-class>pers.zcc.scm.web.servlet.AlipayNotifyServlet</servlet-class>
+  </servlet>
+  
+  <servlet>
+    <servlet-name>WechatpayNotifyServlet</servlet-name>
+    <servlet-class>pers.zcc.scm.web.servlet.WechatpayNotifyServlet</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>AlipayNotifyServlet</servlet-name>
+    <url-pattern>/publicservices/pay/alipayService/alipayNotify</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>WechatpayNotifyServlet</servlet-name>
+    <url-pattern>/publicservices/pay/wechatpayService/wechatpayNotify</url-pattern>
+  </servlet-mapping>
   
   <servlet>
     <servlet-name>CXFService</servlet-name>

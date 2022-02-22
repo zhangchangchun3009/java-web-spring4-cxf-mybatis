@@ -37,11 +37,13 @@ public class CORSFilter implements Filter {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
         String requestOrigin = httpServletRequest.getHeader("origin");
-        if (requestOrigin != null && requestOrigin != "") {
+        if (origin == null || "".equals(origin)) {
             origin = requestOrigin;
         }
-        httpServletResponse.addHeader("Access-Control-Allow-Origin",
-                origin != null ? origin : httpServletRequest.getRemoteHost());
+        if (origin == null || "".equals(origin)) {
+            origin = "*";
+        }
+        httpServletResponse.addHeader("Access-Control-Allow-Origin", origin);
         httpServletResponse.addHeader("Access-Control-Allow-Headers",
                 "Accept, Authorization,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type");
         httpServletResponse.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");

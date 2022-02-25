@@ -19,6 +19,7 @@ import pers.zcc.scm.common.dao.IAsyncTaskEventResultDao;
 import pers.zcc.scm.common.privilege.Privilege;
 import pers.zcc.scm.common.privilege.Resource;
 import pers.zcc.scm.common.service.IAsyncTaskEventResultService;
+import pers.zcc.scm.common.service.ICommonService;
 import pers.zcc.scm.common.vo.AsyncTaskEventResultVO;
 import pers.zcc.scm.common.vo.BatchVO;
 import pers.zcc.scm.common.vo.PageVO;
@@ -29,6 +30,9 @@ import pers.zcc.scm.common.vo.Response;
 public class AsyncTaskEventResultService implements IAsyncTaskEventResultService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AsyncTaskEventResultService.class);
+
+    @Inject
+    private ICommonService commonService;
 
     @Inject
     private IAsyncTaskEventResultDao asyncTaskEventResultDao;
@@ -94,6 +98,11 @@ public class AsyncTaskEventResultService implements IAsyncTaskEventResultService
         itemsToUpdate.add(task);
         batchVO.setItemsToUpdate(itemsToUpdate);
         batch(batchVO);
+    }
+
+    @Override
+    public Long gennerateTaskId() {
+        return commonService.getSequenceValueByName("s_asynctaskid").getData();
     }
 
 }

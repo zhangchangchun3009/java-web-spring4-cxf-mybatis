@@ -25,7 +25,7 @@ DROP TABLE IF EXISTS `sys_async_task`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `sys_async_task` (
-  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '事件id',
+  `id` bigint NOT NULL COMMENT '事件id',
   `task_name` varchar(45) NOT NULL COMMENT '任务名称',
   `status` tinyint NOT NULL DEFAULT '0' COMMENT '任务状态。创建：0；进行中：1；正常结束：2；异常终止9',
   `event_type` tinyint NOT NULL COMMENT '事件类型：excel导入0；excel导出1；',
@@ -183,7 +183,8 @@ CREATE TABLE `sys_sequence` (
 
 LOCK TABLES `sys_sequence` WRITE;
 /*!40000 ALTER TABLE `sys_sequence` DISABLE KEYS */;
-INSERT INTO `sys_sequence` VALUES ('s_common',0,1),('s_orderid',0,1),('s_pklcode',0,1),('s_resourceid',0,1),('s_roleid',1,1),('s_userid',2,1);
+INSERT INTO `sys_sequence` VALUES ('s_common',0,1),('s_orderid',0,1),('s_pklcode',0,1),('s_resourceid',0,1),('s_roleid',1,1),('s_userid',2,1),
+('s_asynctaskid',0,1);
 /*!40000 ALTER TABLE `sys_sequence` ENABLE KEYS */;
 UNLOCK TABLES;
 

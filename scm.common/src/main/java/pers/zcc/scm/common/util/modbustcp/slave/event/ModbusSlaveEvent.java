@@ -29,8 +29,8 @@ public final class ModbusSlaveEvent {
     @Override
     public boolean equals(Object obj) {
         boolean res = false;
-        if (obj == null) {
-            return false;
+        if (this == obj) {
+            return true;
         }
         if (obj instanceof ModbusSlaveEvent) {
             ModbusSlaveEvent compare = (ModbusSlaveEvent) obj;

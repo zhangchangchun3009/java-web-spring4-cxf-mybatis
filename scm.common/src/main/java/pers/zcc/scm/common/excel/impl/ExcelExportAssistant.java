@@ -37,7 +37,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 
 import pers.zcc.scm.common.constant.AsyncTaskStatusEnum;
 import pers.zcc.scm.common.constant.AsyncTaskTypeEnum;
@@ -49,7 +48,6 @@ import pers.zcc.scm.common.excel.vo.ExcelExportVO;
 import pers.zcc.scm.common.service.IAsyncTaskEventResultService;
 import pers.zcc.scm.common.vo.AsyncTaskEventResultVO;
 import pers.zcc.scm.common.vo.BatchVO;
-import pers.zcc.scm.common.vo.PageVO;
 
 /**
  * The Class ExcelExportAssistant.
@@ -129,11 +127,14 @@ public class ExcelExportAssistant implements IExcelExportAssistant {
 
                 try {
 //                  workbook.write(response.getOutputStream());
-                    String path = "D:\\excel\\export\\" + fileName;
-                    if (!SystemUtils.IS_OS_WINDOWS) {
-                        path = "/usr/zcc/excel/export/" + fileName;
+                    String dir = (SystemUtils.IS_OS_WINDOWS ? "D:" : "/usr/zcc") + File.separator + "excel"
+                            + File.separator + "export";
+                    File direc = new File(dir);
+                    if (!direc.exists()) {
+                        direc.mkdirs();
                     }
-                    workbook.write(new File(path));
+                    String filePath = dir + File.separator + fileName;
+                    workbook.write(new File(filePath));
                     workbook.close();
                     asyncTaskService.updateAsyncTaskStatus(eventId, AsyncTaskStatusEnum.COMPLETED);
                 } catch (IOException e) {
@@ -152,10 +153,12 @@ public class ExcelExportAssistant implements IExcelExportAssistant {
     }
 
     private Long createAsyncTask(ExcelExportVO exportContext) {
+        Long eventId = asyncTaskService.gennerateTaskId();
         String fileName = exportContext.getFileName();
         long now = System.currentTimeMillis();
         String taskName = fileName + "_" + now;
         AsyncTaskEventResultVO task = new AsyncTaskEventResultVO();
+        task.setId(eventId);
         task.setTaskName(taskName);
         task.setStartTime(now);
         task.setStatus(AsyncTaskStatusEnum.CREATED.getValue());
@@ -166,12 +169,6 @@ public class ExcelExportAssistant implements IExcelExportAssistant {
         itemsToCreate.add(task);
         batchVO.setItemsToCreate(itemsToCreate);
         asyncTaskService.batch(batchVO);
-        PageVO pageVO = new PageVO();
-        pageVO.setPageNum(1);
-        pageVO.setPageSize(1);
-        PageInfo<AsyncTaskEventResultVO> dbTaskList = asyncTaskService.getList(task, pageVO);
-        AsyncTaskEventResultVO dbTask = dbTaskList.getList().get(0);
-        Long eventId = dbTask.getId();
         return eventId;
     }
 
@@ -309,8 +306,13 @@ public class ExcelExportAssistant implements IExcelExportAssistant {
 
         setBatchDataRow(dataStyle, sheet, headerMap, dataList);
         try {
-            String filePath = (SystemUtils.IS_OS_WINDOWS ? "D:" : "/usr/zcc") + File.separator + "excel"
-                    + File.separator + "export" + File.separator + fileName;
+            String dir = (SystemUtils.IS_OS_WINDOWS ? "D:" : "/usr/zcc") + File.separator + "excel" + File.separator
+                    + "export";
+            File direc = new File(dir);
+            if (!direc.exists()) {
+                direc.mkdirs();
+            }
+            String filePath = dir + File.separator + fileName;
             workbook.write(new File(filePath));
             workbook.close();
             return fileName;

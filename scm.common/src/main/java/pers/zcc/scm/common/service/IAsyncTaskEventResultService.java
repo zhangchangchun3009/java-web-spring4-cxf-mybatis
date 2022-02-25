@@ -37,4 +37,6 @@ public interface IAsyncTaskEventResultService {
 
     void updateAsyncTaskStatus(Long eventId, AsyncTaskStatusEnum status);
 
+    Long gennerateTaskId();
+
 }

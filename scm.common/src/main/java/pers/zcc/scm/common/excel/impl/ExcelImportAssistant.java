@@ -31,8 +31,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import com.github.pagehelper.PageInfo;
-
 import pers.zcc.scm.common.constant.AsyncTaskStatusEnum;
 import pers.zcc.scm.common.constant.AsyncTaskTypeEnum;
 import pers.zcc.scm.common.constant.ExcelDataTypeEnums;
@@ -51,7 +49,6 @@ import pers.zcc.scm.common.util.ApplicationContextManager;
 import pers.zcc.scm.common.vo.AsyncTaskEventResultVO;
 import pers.zcc.scm.common.vo.BatchVO;
 import pers.zcc.scm.common.vo.ExcelErrorVO;
-import pers.zcc.scm.common.vo.PageVO;
 
 /**
  * The Class ExcelImportAssistant.
@@ -262,10 +259,12 @@ public class ExcelImportAssistant implements IExcelImportAssistant {
     }
 
     private Long createAsyncTask(ExcelImportVO importContext) {
+        Long eventId = asyncTaskService.gennerateTaskId();
         String fileName = importContext.getFileName();
         long now = System.currentTimeMillis();
         String taskName = fileName + "_" + now;
         AsyncTaskEventResultVO task = new AsyncTaskEventResultVO();
+        task.setId(eventId);
         task.setTaskName(taskName);
         task.setStartTime(now);
         task.setStatus(AsyncTaskStatusEnum.CREATED.getValue());
@@ -276,12 +275,6 @@ public class ExcelImportAssistant implements IExcelImportAssistant {
         itemsToCreate.add(task);
         batchVO.setItemsToCreate(itemsToCreate);
         asyncTaskService.batch(batchVO);
-        PageVO pageVO = new PageVO();
-        pageVO.setPageNum(1);
-        pageVO.setPageSize(1);
-        PageInfo<AsyncTaskEventResultVO> dbTaskList = asyncTaskService.getList(task, pageVO);
-        AsyncTaskEventResultVO dbTask = dbTaskList.getList().get(0);
-        Long eventId = dbTask.getId();
         return eventId;
     }
 

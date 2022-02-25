@@ -33,9 +33,9 @@
     
     <update id="insert"  parameterType="pers.zcc.scm.common.vo.AsyncTaskEventResultVO" >
         <foreach collection="list" item="item" >
-            insert into sys_async_task(task_name, status, event_type, start_time, end_time,
+            insert into sys_async_task(id, task_name, status, event_type, start_time, end_time,
             created_by,created_time)
-            values(
+            values(#{item.id},
                 #{item.taskName},#{item.status},#{item.eventType},#{item.startTime},#{item.endTime},
                 #{item.createdBy},now()
             );

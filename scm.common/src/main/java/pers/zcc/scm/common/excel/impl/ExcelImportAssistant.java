@@ -2,8 +2,8 @@
 package pers.zcc.scm.common.excel.impl;
 
 import java.beans.PropertyDescriptor;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -76,7 +76,7 @@ public class ExcelImportAssistant implements IExcelImportAssistant {
     private Charset charSet = Charset.forName("gbk");
 
     @Override
-    public void importExcel(FileInputStream fin, ExcelImportVO importContext) {
+    public void importExcel(InputStream fin, ExcelImportVO importContext) {
         Workbook workbook = getWorkbook(fin);
         if (workbook == null) {
             return;
@@ -193,9 +193,11 @@ public class ExcelImportAssistant implements IExcelImportAssistant {
                     continue;
                 }
                 Object value = null;
-                boolean setSuccess = parseAndSetProp(value, cell, importMap, errorList, eventId, i, j);
-                if (!setSuccess) {
-                    continue;
+                if (cellType != CellType.BLANK) {
+                    boolean setSuccess = parseAndSetProp(value, cell, importMap, errorList, eventId, i, j);
+                    if (!setSuccess) {
+                        continue;
+                    }
                 }
                 String prop = importMap.getProperty();
                 PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(voClass, prop);
@@ -206,26 +208,26 @@ public class ExcelImportAssistant implements IExcelImportAssistant {
                 }
             }
             dataList.add(vo);
-            consumeData(consumer, dataList, errorList, importContext);
+            if (dataList.size() >= BATCH_SIZE) {
+                consumeData(consumer, dataList, errorList, importContext);
+            }
         }
     }
 
     private void consumeData(IExcelImportDataConsumer consumer, ArrayList<ExcelDataVO> dataList,
             List<ExcelErrorVO> errorList, ExcelImportVO importContext)
             throws ExcelProcessAbortedException, ExcelDataConsumerException {
-        if (dataList.size() >= BATCH_SIZE) {
-            boolean res = true;
-            try {
-                res = consumer.consumeData(dataList, errorList, importContext);
-            } catch (Exception e) {
-                LOGGER.error("data consumer consumeData err, import process is aborted,", e);
-                throw new ExcelDataConsumerException();
-            }
-            if (!res) {
-                throw new ExcelProcessAbortedException();
-            }
-            dataList.clear();
+        boolean res = true;
+        try {
+            res = consumer.consumeData(dataList, errorList, importContext);
+        } catch (Exception e) {
+            LOGGER.error("data consumer consumeData err, import process is aborted,", e);
+            throw new ExcelDataConsumerException();
         }
+        if (!res) {
+            throw new ExcelProcessAbortedException();
+        }
+        dataList.clear();
     }
 
     private void saveError(List<ExcelErrorVO> errorList) {
@@ -245,7 +247,7 @@ public class ExcelImportAssistant implements IExcelImportAssistant {
         }
     }
 
-    private Workbook getWorkbook(FileInputStream fin) {
+    private Workbook getWorkbook(InputStream fin) {
         Workbook workbook = null;
         try {
             workbook = new HSSFWorkbook(fin);

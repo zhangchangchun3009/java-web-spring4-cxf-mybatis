@@ -2,12 +2,9 @@
 package pers.zcc.scm.common.util;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -99,22 +96,16 @@ public class FileUploadUtil {
                 String savePathStr = mkFilePath(savePath, fileName);
                 LOGGER.trace("保存文件名为:" + savefileName + " 保存路径为:" + savePathStr);
                 // 获取item中的上传文件的输入流
-                try (InputStream fis = fileItem.getInputStream();
+                try (InputStream in = fileItem.getInputStream();
                         FileOutputStream fos = new FileOutputStream(savePathStr + File.separator + savefileName);) {
-                    // 获取读通道
-                    FileChannel readChannel = ((FileInputStream) fis).getChannel();
-                    // 获取读通道
-                    FileChannel writeChannel = fos.getChannel();
                     // 创建一个缓冲区
-                    ByteBuffer buffer = ByteBuffer.allocate(1024);
+                    byte[] byteBuf = new byte[8 * 1024];
                     while (true) {
-                        buffer.clear();
-                        int len = readChannel.read(buffer);// 读入数据
+                        int len = in.read(byteBuf);
                         if (len < 0) {
                             break;// 读取完毕
                         }
-                        buffer.flip();
-                        writeChannel.write(buffer);// 写入数据
+                        fos.write(byteBuf);// 写入数据
                     }
                     fileItem.delete();
                 } catch (IOException e) {
@@ -143,12 +134,8 @@ public class FileUploadUtil {
      * @return
      */
     public static String mkFilePath(String savePath, String fileName) {
-        // 得到文件名的hashCode的值，得到的就是filename这个字符串对象在内存中的地址
-        int hashcode = fileName.hashCode();
-        int dir1 = hashcode & 0xf;
-        int dir2 = (hashcode & 0xf0) >> 4;
         // 构造新的保存目录
-        String dir = savePath + File.separator + dir1 + File.separator + dir2;
+        String dir = savePath;
         // File既可以代表文件也可以代表目录
         File file = new File(dir);
         if (!file.exists()) {

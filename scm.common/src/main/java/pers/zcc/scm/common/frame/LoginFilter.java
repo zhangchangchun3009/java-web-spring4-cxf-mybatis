@@ -58,6 +58,13 @@ public class LoginFilter implements Filter {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
         HttpSession session = httpServletRequest.getSession();
+        //本地测试接口时放开以下注释代码获取登录状态和接口权限
+//        UserVO mocku = new UserVO();
+//        mocku.setId(999);
+//        mocku.setUserName("zcc");
+//        mocku.setUserId(998);
+//        mocku.setUserType("system");
+//        session.setAttribute("user", mocku);
         String path = httpServletRequest.getRequestURI();
         LOGGER.debug(path);
         if (!urlWhiteList.isEmpty()) {

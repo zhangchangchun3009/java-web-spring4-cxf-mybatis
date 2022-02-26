@@ -72,6 +72,16 @@ public interface Constants {
     String PRIVILEGE_EXPORT_DESC = "导出";
 
     /**
+     * 导入权限编码
+     */
+    String PRIVILEGE_IMPORT_CODE = "import";
+
+    /**
+     * 导入权限描述
+     */
+    String PRIVILEGE_IMPORT_DESC = "导入";
+
+    /**
      * 中国时区TimeZone 
      * 可选方法toZoneId
      */

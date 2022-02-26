@@ -16,7 +16,7 @@ public class ExcelSheetMapVO<T extends ExcelDataVO> {
      */
     private String sheetName;
 
-    private Class<ExcelDataVO> voClass;
+    private Class<T> voClass;
 
     private String consumerBeanName;
 
@@ -33,11 +33,11 @@ public class ExcelSheetMapVO<T extends ExcelDataVO> {
         this.sheetName = sheetName;
     }
 
-    public Class<ExcelDataVO> getVoClass() {
+    public Class<T> getVoClass() {
         return voClass;
     }
 
-    public void setVoClass(Class<ExcelDataVO> voClass) {
+    public void setVoClass(Class<T> voClass) {
         this.voClass = voClass;
     }
 

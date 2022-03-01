@@ -8,6 +8,13 @@ import pers.zcc.scm.common.util.stream.impl.ClientHandler;
 import pers.zcc.scm.common.util.stream.impl.IgnoreDuplicates;
 import pers.zcc.scm.common.util.stream.impl.RoutePool;
 
+/**
+ * a test of the paraller event handler stream api
+ * see <link>http://ifeve.com/part-1-thread-pools/</link>
+ * @originframeauthor unknow
+ * @author zhangchangchun integrate code, do a little change and test it
+ * @Date 2022年3月1日
+ */
 public class TestStream {
 
     public static void main(String[] args) {

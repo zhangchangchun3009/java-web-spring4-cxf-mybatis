@@ -3,7 +3,7 @@ package pers.zcc.scm.web.test;
 /**
  * false sharing test
  * Running the test while ramping the number of threads and adding/removing the cache line padding,
- * thats line 13,line 43
+ * thats line 16,line 46
  * compare the running time
  * eg,when NUM_THREADS = 4,padding:duration = 451306440,nopadding:duration = 21282241400
  * cache line causes deeply latency

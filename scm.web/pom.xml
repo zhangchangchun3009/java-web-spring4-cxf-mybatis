@@ -6,7 +6,7 @@
     <version>${project.version}</version>
   </parent>
   <artifactId>scm.web</artifactId>
-  <name>scm.common</name>
+  <name>scm.web</name>
   <packaging>war</packaging>
   <dependencies>
     <dependency>

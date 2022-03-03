@@ -1,9 +1,9 @@
 package pers.zcc.scm.common.util.stream.impl;
 
 import pers.zcc.scm.common.util.stream.api.Event;
-import pers.zcc.scm.common.util.stream.api.IEventConsumer;
+import pers.zcc.scm.common.util.stream.api.IClientHandler;
 
-public class ClientHandler implements IEventConsumer {
+public class ClientHandler implements IClientHandler {
 
     @Override
     public Event consume(Event event) {

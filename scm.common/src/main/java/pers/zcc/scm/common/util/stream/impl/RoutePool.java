@@ -13,14 +13,15 @@ import java.util.stream.IntStream;
 
 import pers.zcc.scm.common.util.stream.api.Event;
 import pers.zcc.scm.common.util.stream.api.IEventConsumer;
+import pers.zcc.scm.common.util.stream.api.IPlugin;
 
-public class RoutePool implements IEventConsumer, Closeable {
+public class RoutePool implements IPlugin, Closeable {
 
-    private final IEventConsumer nextConsumer;
+    private IEventConsumer nextConsumer;
 
     private final List<ExecutorService> executors;
 
-    public RoutePool(IEventConsumer consumer) {
+    public RoutePool() {
         List<LinkedBlockingDeque<Runnable>> queueList = IntStream.range(0, 10).mapToObj((i) -> {
             return new LinkedBlockingDeque<Runnable>(3000);
         }).collect(Collectors.toList());
@@ -28,6 +29,10 @@ public class RoutePool implements IEventConsumer, Closeable {
                 .map((queue) -> new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, queue))
                 .collect(Collectors.toList());
         this.executors = new CopyOnWriteArrayList<ExecutorService>(executorList);
+    }
+
+    @Override
+    public void setNext(IEventConsumer consumer) {
         this.nextConsumer = consumer;
 
     }

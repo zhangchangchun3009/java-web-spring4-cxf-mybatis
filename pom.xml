@@ -358,6 +358,14 @@
         <version>3.9.9</version>
     </dependency>
     
+    <!-- https://mvnrepository.com/artifact/com.lmax/disruptor -->
+    <dependency>
+        <groupId>com.lmax</groupId>
+        <artifactId>disruptor</artifactId>
+        <version>3.4.4</version>
+    </dependency>
+
+    
     </dependencies>
   </dependencyManagement>
   
@@ -593,6 +601,13 @@
         <groupId>org.ehcache</groupId>
         <artifactId>ehcache</artifactId>
     </dependency>
+    
+    <!-- https://mvnrepository.com/artifact/com.lmax/disruptor -->
+    <dependency>
+        <groupId>com.lmax</groupId>
+        <artifactId>disruptor</artifactId>
+    </dependency>
+
      
   </dependencies>
   

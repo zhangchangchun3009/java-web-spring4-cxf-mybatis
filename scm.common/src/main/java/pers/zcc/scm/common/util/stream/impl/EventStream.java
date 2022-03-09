@@ -11,11 +11,15 @@ import pers.zcc.scm.common.util.stream.api.IPlugin;
 
 public class EventStream implements IEventStream {
 
+    private static final int MAX_PLUGINS_SIZE = 16;
+
+    private static final int INIT_PLUGIN_IDX = -1;
+
     private Event event;
 
-    private final IPlugin[] plugins = new IPlugin[16];
+    private final IPlugin[] plugins = new IPlugin[MAX_PLUGINS_SIZE];
 
-    private int lastIdx;
+    private int lastIdx = INIT_PLUGIN_IDX;
 
     private final AtomicBoolean init = new AtomicBoolean(false);
 
@@ -28,27 +32,27 @@ public class EventStream implements IEventStream {
     @Override
     public EventStream addPlugin(IPlugin plugin) {
         try {
-            plugins[lastIdx++] = plugin;
+            plugins[++lastIdx] = plugin;
         } catch (IndexOutOfBoundsException e) {
-            throw new RuntimeException("you have added too many plugins,limit 16");
+            throw new RuntimeException("you have added too many plugins,limit " + MAX_PLUGINS_SIZE);
         }
         return this;
     }
 
     private void initPlugin(IClientHandler clientHandler) {
         if (!init.get()) {
-            if (lastIdx > 0) {
-                plugins[lastIdx - 1].setNext(clientHandler);
-                if (lastIdx >= 2) {
-                    for (int i = lastIdx - 2; i >= 0; i--) {
+            if (lastIdx > INIT_PLUGIN_IDX) {
+                plugins[lastIdx].setNext(clientHandler);
+                if (lastIdx >= INIT_PLUGIN_IDX + 2) {
+                    for (int i = lastIdx - 1; i >= 0; i--) {
                         plugins[i].setNext(plugins[i + 1]);
                     }
                 }
             }
             init.set(true);
         } else {
-            if (lastIdx > 0) {
-                plugins[lastIdx - 1].setNext(clientHandler);
+            if (lastIdx > INIT_PLUGIN_IDX) {
+                plugins[lastIdx].setNext(clientHandler);
             }
         }
     }
@@ -56,8 +60,8 @@ public class EventStream implements IEventStream {
     @Override
     public void consume(IClientHandler clientHandler) {
         initPlugin(clientHandler);
-        if (lastIdx > 0) {
-            plugins[lastIdx - 1].consume(event);
+        if (lastIdx > INIT_PLUGIN_IDX) {
+            plugins[lastIdx].consume(event);
         } else {
             clientHandler.consume(event);
         }
@@ -66,10 +70,10 @@ public class EventStream implements IEventStream {
 
     @Override
     public void close() {
-        if (lastIdx == 0) {
+        if (lastIdx == INIT_PLUGIN_IDX) {
             return;
         }
-        for (int i = 0; i < lastIdx; i++) {
+        for (int i = 0; i <= lastIdx; i++) {
             IPlugin plugin = plugins[i];
             if (plugin instanceof Closeable) {
                 Closeable pluginC = (Closeable) plugin;

@@ -9,8 +9,10 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 
 import org.apache.catalina.LifecycleException;
+import org.apache.catalina.LifecycleState;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,8 +26,41 @@ import pers.zcc.scm.common.util.EnvironmentProps;
 public class AppBootstrap {
     private static final Logger LOGGER = LoggerFactory.getLogger(AppBootstrap.class);
 
-    public static void main(String[] args) {
-        Tomcat tomcat = new Tomcat();
+    static Tomcat tomcat;
+
+    /**
+     * 另一种外部关闭方式是在服务器的8005 socket端口写入"SHUTDOWN"信息
+     * @throws InterruptedException
+     */
+    public static void stop() throws InterruptedException {
+        String stopFilePath = SystemUtils.IS_OS_WINDOWS ? "D:\\stopscm.txt" : "/usr/zcc/stopscm.txt";
+        File stopFile = new File(stopFilePath);
+        while (true) {
+            if (stopFile.exists()) {
+                try {
+                    innerStop();
+                } finally {
+                    stopFile.delete();
+                }
+                break;
+            }
+            Thread.sleep(1000);
+        }
+    }
+
+    private static void innerStop() {
+        if (tomcat == null || tomcat.getServer().getState() != LifecycleState.STARTED) {
+            return;
+        }
+        try {
+            tomcat.stop();
+        } catch (LifecycleException e) {
+            LOGGER.error("tomcat stop server occured LifecycleException,", e);
+        }
+    }
+
+    public static void start() {
+        tomcat = new Tomcat();
         String springProfilesActive = System.getProperty("spring.profiles.active");
         String baseDir = Thread.currentThread().getContextClassLoader().getResource("").getPath();
         File passfile = new File(baseDir + "conf/" + springProfilesActive + "/cert/jks-password.txt");
@@ -83,6 +118,19 @@ public class AppBootstrap {
             LOGGER.error("tomcat start failed:", e);
         }
         tomcat.getServer().await();
+    }
+
+    public static void main(String[] args) {
+        new Thread(() -> {
+            start();
+        }).start();
+        new Thread(() -> {
+            try {
+                stop();
+            } catch (InterruptedException e) {
+                return;
+            }
+        }).start();
     }
 
 }

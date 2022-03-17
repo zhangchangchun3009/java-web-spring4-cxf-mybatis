@@ -50,4 +50,42 @@ public class EnvironmentProps {
         return getProperty(baseDir + "conf/" + activeProfile + "/application.properties", key);
     }
 
+    /**
+     * get value as int
+     * @param path
+     * @param key
+     * @param defaultValue
+     * @return
+     * @throws NumberFormatException
+     */
+    public static int getInteger(String path, String key, int defaultValue) throws NumberFormatException {
+        String value = getProperty(path, key);
+        return (value != null && !"".equals(value)) ? Integer.parseInt(value) : defaultValue;
+    }
+
+    /**
+     * get value as long
+     * @param path
+     * @param key
+     * @param defaultValue
+     * @return
+     * @throws NumberFormatException
+     */
+    public static long getLong(String path, String key, long defaultValue) throws NumberFormatException {
+        String value = getProperty(path, key);
+        return (value != null && !"".equals(value)) ? Long.parseLong(value) : defaultValue;
+    }
+
+    /**
+     * get value as string
+     * @param path
+     * @param key
+     * @param defaultValue
+     * @return
+     */
+    public static String getString(String path, String key, String defaultValue) {
+        String value = getProperty(path, key);
+        return (value != null && !"".equals(value)) ? value : defaultValue;
+    }
+
 }

@@ -10,6 +10,8 @@ import javax.servlet.ServletException;
 
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleState;
+import org.apache.catalina.Server;
+import org.apache.catalina.Service;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.commons.lang3.SystemUtils;
@@ -73,11 +75,14 @@ public class AppBootstrap {
             LOGGER.error("tomcat start failed:", e);
         }
         String appPropPath = baseDir + "conf/" + springProfilesActive + "/application.properties";
-        int port = Integer.parseInt(EnvironmentProps.getProperty(appPropPath, "server.port"));
-        int sslPort = Integer.parseInt(EnvironmentProps.getProperty(appPropPath, "server.sslPort"));
-        String contextPath = EnvironmentProps.getProperty(appPropPath, "server.contextPath");
-        String maxThread = EnvironmentProps.getProperty(appPropPath, "server.maxThread");
-        long requestTimeoutMs = Long.parseLong(EnvironmentProps.getProperty(appPropPath, "server.requestTimeoutMs"));
+        int port = EnvironmentProps.getInteger(appPropPath, "server.port", 8080);
+        int sslPort = EnvironmentProps.getInteger(appPropPath, "server.sslPort", 8443);
+        int shutdownPort = EnvironmentProps.getInteger(appPropPath, "server.shutdownPort", 8005);
+        String shutdownCmd = EnvironmentProps.getString(appPropPath, "server.shutdownCmd", "SHUTDOWN");
+        String contextPath = EnvironmentProps.getString(appPropPath, "server.contextPath", "/scm.web");
+        String maxThread = EnvironmentProps.getString(appPropPath, "server.maxThread", "200");
+
+        long requestTimeoutMs = EnvironmentProps.getLong(appPropPath, "server.requestTimeoutMs", 120000L);
         LOGGER.info("tomcat start at port:" + port);
         LOGGER.info("tomcat start at baseDir:" + baseDir);
         LOGGER.info("tomcat start at contextPath:" + contextPath);
@@ -89,6 +94,10 @@ public class AppBootstrap {
             LOGGER.error("tomcat start failed:", e);
         }
         tomcat.enableNaming();
+        Server server = tomcat.getServer();
+        server.setPort(shutdownPort);
+        server.setShutdown(shutdownCmd);
+        Service service = tomcat.getService();
         Connector httpConnector = new Connector();
         httpConnector.setPort(port);
         httpConnector.setRedirectPort(sslPort);
@@ -97,7 +106,7 @@ public class AppBootstrap {
         httpConnector.setScheme("http");
         httpConnector.setProperty("maxThreads", maxThread);
         tomcat.setConnector(httpConnector);
-        tomcat.getService().addConnector(httpConnector);
+        service.addConnector(httpConnector);
 
         Connector sslConnector = new Connector();
         sslConnector.setPort(sslPort);
@@ -111,26 +120,29 @@ public class AppBootstrap {
         sslConnector.setProperty("sslProtocol", "TLS");
         sslConnector.setProperty("keystoreFile", "./conf/" + springProfilesActive + "/cert/tomcat.jks");
         sslConnector.setProperty("keystorePass", jksPassword);
-        tomcat.getService().addConnector(sslConnector);
+        service.addConnector(sslConnector);
         try {
             tomcat.start();
         } catch (LifecycleException e) {
             LOGGER.error("tomcat start failed:", e);
         }
-        tomcat.getServer().await();
+        server.await();
+        innerStop();
     }
 
     public static void main(String[] args) {
         new Thread(() -> {
             start();
-        }).start();
-        new Thread(() -> {
+        }, "main-start").start();
+        Thread stopThread = new Thread(() -> {
             try {
                 stop();
             } catch (InterruptedException e) {
                 return;
             }
-        }).start();
+        }, "main-stop");
+        stopThread.setDaemon(true);
+        stopThread.start();
     }
 
 }

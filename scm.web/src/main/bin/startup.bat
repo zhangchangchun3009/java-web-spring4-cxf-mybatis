@@ -21,6 +21,6 @@ if !COUNT! LSS 50 (
 set /a COUNT=!COUNT!+1
 )
 set MAINCLASS=pers.zcc.scm.web.launch.AppBootstrap
-set JAVA_OPTS=-D"spring.profiles.active=dev" -X"ms1024m" -X"mx1024m"
+set JAVA_OPTS=-D"spring.profiles.active=dev" -D"file.encoding=UTF-8" -X"ms1024m" -X"mx1024m"
 java %JAVA_OPTS% -classpath ".;%CLASSPATH%%CLASSPATH2%%CLASSPATH3%" %MAINCLASS%
 echo started

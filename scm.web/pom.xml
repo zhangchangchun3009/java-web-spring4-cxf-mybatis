@@ -7,7 +7,8 @@
   </parent>
   <artifactId>scm.web</artifactId>
   <name>scm.web</name>
-  <packaging>war</packaging>
+<!-- <packaging>war</packaging> --> 
+  <packaging>jar</packaging> 
   <dependencies>
     <dependency>
       <groupId>pers.zhangchangchun</groupId>
@@ -37,6 +38,12 @@
         <groupId>org.apache.tomcat.embed</groupId>
         <artifactId>tomcat-embed-logging-juli</artifactId>
     </dependency>
+    
+<!--     <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-loader</artifactId>
+        <version>2.1.3.RELEASE</version>
+    </dependency> -->
     
   </dependencies>
   
@@ -88,13 +95,22 @@
         </resource>
         
         <resource>
+            <directory >
+                src/main/webapp
+            </directory>
+            <includes >
+             <include>**/*.*</include>
+            </includes>
+        </resource>
+        
+        <resource>
             <directory>src/main/resources/conf/${profile.env}</directory>
             <targetPath>conf/${profile.env}</targetPath>
         </resource>
         
     </resources>
     <plugins>
-        <plugin>
+       <!--  <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-dependency-plugin</artifactId>
             <executions>
@@ -105,16 +121,14 @@
                         <goal>copy-dependencies</goal>
                     </goals>
                     <configuration>
-                        <!--${project.build.directory} class的输出目录不做设置的话默认代表项目根目录的target目录；
-                                                           也可以使用“自定义文件夹/自定义文件夹 例如：a/b”，也可以使用绝对路径如：“D:\test” -->
                         <outputDirectory>${project.build.directory}/scm.web/lib</outputDirectory>
                         <excludeTransitive>false</excludeTransitive>
                         <stripVersion>false</stripVersion>
-                        <includeScope>system</includeScope>
+                        <includeScope>compile</includeScope>
                     </configuration>
                 </execution>
             </executions>
-        </plugin>
+        </plugin> -->
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
@@ -124,7 +138,7 @@
                 <encoding>UTF-8</encoding>
             </configuration>
         </plugin>
-        <plugin>
+        <!-- <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-war-plugin</artifactId>
             <configuration> 
@@ -142,6 +156,63 @@
                     </resource> 
                 </webResources> 
             </configuration>
+        </plugin> -->
+       <!--  <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <configuration> 
+                <archive>
+                    <manifest>
+                        <addClasspath>true</addClasspath>
+                        <classpathPrefix>/scm.web/lib</classpathPrefix>
+                        <mainClass>pers.zcc.scm.web.launch.AppBootstrap</mainClass>
+                    </manifest>
+                </archive>
+                
+            </configuration>
+        </plugin> -->
+        <!-- <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+            <version>2.6.4</version>
+            <executions>
+                <execution>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>repackage</goal>
+                     </goals>
+                     <configuration>
+                        <mainClass>pers.zcc.scm.web.launch.AppBootstrap</mainClass>
+                        <layout>JAR</layout>
+                    </configuration>
+                 </execution>
+             </executions>
+            
+        </plugin> -->
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <executions>
+               <execution>
+                    <id>assembly</id>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>single</goal>
+                    </goals>
+                    <configuration>
+                        <!-- <archive>
+                            <manifest>
+                                <mainClass>pers.zcc.scm.web.launch.AppBootstrap</mainClass>
+                                <addClasspath>true</addClasspath>
+                                <classpathPrefix>lib/</classpathPrefix>
+                            </manifest>
+                        </archive> -->
+                        <descriptors>
+                            <descriptor>src/main/assembly/assembly.xml</descriptor>
+                        </descriptors>
+                    </configuration>
+               </execution>
+            </executions>
         </plugin>
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>

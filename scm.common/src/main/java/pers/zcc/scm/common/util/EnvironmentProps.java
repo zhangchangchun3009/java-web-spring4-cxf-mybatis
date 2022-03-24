@@ -1,6 +1,8 @@
 package pers.zcc.scm.common.util;
 
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -85,6 +87,60 @@ public class EnvironmentProps {
      */
     public static String getString(String path, String key, String defaultValue) {
         String value = getProperty(path, key);
+        return (value != null && !"".equals(value)) ? value : defaultValue;
+    }
+
+    /**
+     * get as Properties
+     * @param in
+     * @return
+     * @throws IOException
+     */
+    public static Properties getProperties(InputStream in) {
+        Properties properties = new Properties();
+        try {
+            properties.load(in);
+        } catch (IOException e) {
+            LOGGER.error("loadAllProperties e,", e);
+        }
+        return properties;
+    }
+
+    /**
+     * getInteger
+     * @param prop
+     * @param key
+     * @param defaultValue
+     * @return
+     * @throws NumberFormatException
+     */
+    public static int getInteger(Properties prop, String key, int defaultValue) throws NumberFormatException {
+        String value = prop.getProperty(key);
+        return (value != null && !"".equals(value)) ? Integer.parseInt(value) : defaultValue;
+    }
+
+    /**
+     * getLong
+     * @param prop
+     * @param key
+     * @param defaultValue
+     * @return
+     * @throws NumberFormatException
+     */
+    public static long getLong(Properties prop, String key, long defaultValue) throws NumberFormatException {
+        String value = prop.getProperty(key);
+        return (value != null && !"".equals(value)) ? Long.parseLong(value) : defaultValue;
+    }
+
+    /**
+     * getString
+     * @param prop
+     * @param key
+     * @param defaultValue
+     * @return
+     */
+    public static String getString(Properties prop, String key, String defaultValue) {
+        String value = prop.getProperty(key);
         return (value != null && !"".equals(value)) ? value : defaultValue;
     }
 

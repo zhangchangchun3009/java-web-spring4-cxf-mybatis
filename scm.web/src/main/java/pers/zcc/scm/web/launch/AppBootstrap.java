@@ -1,10 +1,12 @@
-package pers.zcc.scm.web.start;
+package pers.zcc.scm.web.launch;
 
-import java.io.BufferedReader;
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Properties;
 
 import javax.servlet.ServletException;
 
@@ -28,7 +30,7 @@ import pers.zcc.scm.common.util.EnvironmentProps;
 public class AppBootstrap {
     private static final Logger LOGGER = LoggerFactory.getLogger(AppBootstrap.class);
 
-    static Tomcat tomcat;
+    private static Tomcat tomcat;
 
     /**
      * 另一种外部关闭方式是在服务器的8005 socket端口写入"SHUTDOWN"信息
@@ -64,25 +66,55 @@ public class AppBootstrap {
     public static void start() {
         tomcat = new Tomcat();
         String springProfilesActive = System.getProperty("spring.profiles.active");
-        String baseDir = Thread.currentThread().getContextClassLoader().getResource("").getPath();
-        File passfile = new File(baseDir + "conf/" + springProfilesActive + "/cert/jks-password.txt");
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        URL bootURL = AppBootstrap.class.getProtectionDomain().getCodeSource().getLocation();
+        String baseDir = bootURL.getPath();
+        boolean runInjar = baseDir.contains(".jar!");
+        if (runInjar) {
+            baseDir = baseDir.substring(0, baseDir.indexOf("!"));
+            try {
+                baseDir = new URL(baseDir).getPath();
+                String jarPath = new File(baseDir).getPath();
+                /**
+                 * when pack with spring boot maven plugin, I have to set the webapp classloader 
+                 * of embedded tomcat by springboot jar classloader. that's difficult, and spring boot has do it.
+                 * the only easy way to run my app is pack the dependencies out of jar,
+                 * and jar plugin or assembly plugin is enough to do so
+                */
+                baseDir = jarPath.substring(0, jarPath.lastIndexOf(File.separator)) + "/webapp";
+            } catch (MalformedURLException e1) {
+                e1.printStackTrace();
+            }
+            File webapp = new File(baseDir);
+            if (!webapp.exists()) {
+                webapp.mkdirs();
+            }
+        } else {
+            baseDir = cl.getResource("").getPath(); //when run in jar, gg, dir must be in file system
+        }
         String jksPassword = "";
-        try (BufferedReader reader = new BufferedReader(new FileReader(passfile))) {
-            jksPassword = reader.readLine();
+        //change the input stream to fit the way of get resource in a jar
+        try (BufferedInputStream bin = new BufferedInputStream(
+                cl.getResourceAsStream("conf/" + springProfilesActive + "/cert/jks-password.txt"));) {
+            byte[] buffer = new byte[bin.available()];
+            bin.read(buffer);
+            jksPassword = new String(buffer, "UTF-8");
         } catch (FileNotFoundException e) {
             LOGGER.error("tomcat start failed:", e);
         } catch (IOException e) {
             LOGGER.error("tomcat start failed:", e);
         }
-        String appPropPath = baseDir + "conf/" + springProfilesActive + "/application.properties";
-        int port = EnvironmentProps.getInteger(appPropPath, "server.port", 8080);
-        int sslPort = EnvironmentProps.getInteger(appPropPath, "server.sslPort", 8443);
-        int shutdownPort = EnvironmentProps.getInteger(appPropPath, "server.shutdownPort", 8005);
-        String shutdownCmd = EnvironmentProps.getString(appPropPath, "server.shutdownCmd", "SHUTDOWN");
-        String contextPath = EnvironmentProps.getString(appPropPath, "server.contextPath", "/scm.web");
-        String maxThread = EnvironmentProps.getString(appPropPath, "server.maxThread", "200");
-
-        long requestTimeoutMs = EnvironmentProps.getLong(appPropPath, "server.requestTimeoutMs", 120000L);
+//        String appPropPath = baseDir + "conf/" + springProfilesActive + "/application.properties";
+        BufferedInputStream propBin = new BufferedInputStream(
+                cl.getResourceAsStream("conf/" + springProfilesActive + "/application.properties"));
+        Properties props = EnvironmentProps.getProperties(propBin);
+        int port = EnvironmentProps.getInteger(props, "server.port", 8080);
+        int sslPort = EnvironmentProps.getInteger(props, "server.sslPort", 8443);
+        int shutdownPort = EnvironmentProps.getInteger(props, "server.shutdownPort", 8005);
+        String shutdownCmd = EnvironmentProps.getString(props, "server.shutdownCmd", "SHUTDOWN");
+        String contextPath = EnvironmentProps.getString(props, "server.contextPath", "/scm.web");
+        String maxThread = EnvironmentProps.getString(props, "server.maxThread", "200");
+        long requestTimeoutMs = EnvironmentProps.getLong(props, "server.requestTimeoutMs", 120000L);
         LOGGER.info("tomcat start at port:" + port);
         LOGGER.info("tomcat start at baseDir:" + baseDir);
         LOGGER.info("tomcat start at contextPath:" + contextPath);
@@ -118,7 +150,9 @@ public class AppBootstrap {
         sslConnector.setProperty("secure", "true");
         sslConnector.setProperty("clientAuth", "false");
         sslConnector.setProperty("sslProtocol", "TLS");
-        sslConnector.setProperty("keystoreFile", "./conf/" + springProfilesActive + "/cert/tomcat.jks");
+        //when run in jar, gg, dir must be in file system, still i can't get one fat jar to run
+        sslConnector.setProperty("keystoreFile",
+                runInjar ? baseDir + "/cert/tomcat.jks" : "./conf/" + springProfilesActive + "/cert/tomcat.jks");
         sslConnector.setProperty("keystorePass", jksPassword);
         service.addConnector(sslConnector);
         try {
@@ -131,9 +165,10 @@ public class AppBootstrap {
     }
 
     public static void main(String[] args) {
-        new Thread(() -> {
+        Thread startThread = new Thread(() -> {
             start();
-        }, "main-start").start();
+        }, "main-start");
+        startThread.start();
         Thread stopThread = new Thread(() -> {
             try {
                 stop();

@@ -1,4 +1,3 @@
-
 package pers.zcc.scm.common.util.modbustcp.slave.db;
 
 import java.util.Map;
@@ -23,8 +22,16 @@ public class ModbusPoolDBMS {
         instanceHolder.putIfAbsent(unitId, new ModbusPoolDB(capacity));
     }
 
-    public static ModbusPoolDB getInstance(String unitId) {
+    private static ModbusPoolDB getInstance(String unitId) {
         return instanceHolder.get(unitId);
+    }
+
+    public static int getCapacity(String unitId) {
+        ModbusPoolDB db = instanceHolder.get(unitId);
+        if (db == null) {
+            throw new IllegalArgumentException("unit Id doesn't exist!");
+        }
+        return db.getCapacity();
     }
 
     /**
@@ -75,11 +82,15 @@ public class ModbusPoolDBMS {
 
     private static class ModbusPoolDB {
         /** The holding registers. */
-        private short[] holdingRegisters;
+        private final short[] holdingRegisters;
 
         private volatile int[] writeLocks;
 
         private Object lock = new Object();
+
+        public int getCapacity() {
+            return holdingRegisters.length;
+        }
 
         public ModbusPoolDB(int capacity) {
             this.holdingRegisters = new short[capacity];

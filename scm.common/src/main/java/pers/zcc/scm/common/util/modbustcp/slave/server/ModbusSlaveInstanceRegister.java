@@ -25,8 +25,8 @@ public class ModbusSlaveInstanceRegister {
      * @param unitId the unit id
      * @return single instance of ModbusSlaveInstanceRegister
      */
-    public static ModbusSlaveTcpServer getInstance(int unitId) {
-        return instanceMap.get(Integer.valueOf(unitId));
+    public static ModbusSlaveTcpServer getInstance(int serverId) {
+        return instanceMap.get(Integer.valueOf(serverId));
     }
 
     /**
@@ -35,7 +35,7 @@ public class ModbusSlaveInstanceRegister {
      * @param unitId the unit id
      * @param instance the instance
      */
-    public static void regist(int unitId, ModbusSlaveTcpServer instance) {
-        instanceMap.putIfAbsent(Integer.valueOf(unitId), instance);
+    public static void regist(int serverId, ModbusSlaveTcpServer instance) {
+        instanceMap.putIfAbsent(Integer.valueOf(serverId), instance);
     }
 }

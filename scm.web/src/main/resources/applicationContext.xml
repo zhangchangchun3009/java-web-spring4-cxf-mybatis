@@ -135,14 +135,14 @@
 			    <!-- pageHelper 分页插件 -->
 		<property name="plugins">
 			  <array>
-				   <bean class="com.github.pagehelper.PageHelper">
-					    <property name="properties">
-						     <value>
-						      dialect=mysql
-						      rowBoundsWithCount=true
-						     </value>
-					    </property>
-				   </bean>
+				   <bean class="com.github.pagehelper.PageInterceptor">
+                        <property name="properties">
+                             <value>
+                              helperDialect=mysql
+                              rowBoundsWithCount=true
+                             </value>
+                        </property>
+                   </bean>
 			  </array>
 		</property>
 	</bean>

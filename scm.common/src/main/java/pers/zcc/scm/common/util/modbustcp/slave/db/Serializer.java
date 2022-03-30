@@ -29,25 +29,27 @@ public class Serializer {
 
     private static final String STORE_FILE_NAME = ".modbus.db";
 
-    private static String defaultFilePath = EnvironmentProps.getBaseDir();
-
-    private static String path = EnvironmentProps.getAppPropAsString("scm.common.modbusslave.serializeFilePath",
-            defaultFilePath);
-
     private static ObjectMapper mapper = JacksonUtil.getObjectMapper();
 
-    public static void serialize() throws IOException {
-        path = path.endsWith("/") || path.endsWith("\\") ? path : path + "/";
-        File storeFileDir = new File(path);
+    private static String defaultFilePath;
+
+    private static String fileDirPath;
+
+    private static String fileFullPath;
+
+    static {
+        defaultFilePath = EnvironmentProps.getBaseDir();
+        fileDirPath = EnvironmentProps.getAppPropAsString("scm.common.modbusslave.serializeFilePath", defaultFilePath);
+        fileDirPath = fileDirPath.endsWith("/") || fileDirPath.endsWith("\\") ? fileDirPath : fileDirPath + "/";
+        fileFullPath = fileDirPath + STORE_FILE_NAME;
+    }
+
+    public static synchronized void serialize() throws IOException {
+        File storeFileDir = new File(fileDirPath);
         if (!storeFileDir.exists()) {
             storeFileDir.mkdirs();
         }
         Map<String, ModbusPoolDB> holder = ModbusPoolDBMS.getInstanceHolder();
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         List<SerialData> object = new ArrayList<SerialData>();
         for (String unitId : holder.keySet()) {
             ModbusPoolDB pool = holder.get(unitId);
@@ -55,7 +57,7 @@ public class Serializer {
             SerialData database = new SerialData(unitId, data);
             object.add(database);
         }
-        File storeFile = new File(path + STORE_FILE_NAME);
+        File storeFile = new File(fileFullPath);
         try (FileOutputStream fout = new FileOutputStream(storeFile);) {
             String text = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(object);
             fout.write(text.getBytes(CHARSET_UTF_8));
@@ -64,7 +66,7 @@ public class Serializer {
     }
 
     public static void deserialize() throws IOException {
-        File storeFile = new File(path + STORE_FILE_NAME);
+        File storeFile = new File(fileFullPath);
         if (!storeFile.exists()) {
             return;
         }

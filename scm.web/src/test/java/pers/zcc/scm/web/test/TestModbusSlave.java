@@ -23,14 +23,15 @@ public class TestModbusSlave {
 //            ModbusMasterTcpUtil.WriteSingleRegisterRequest(master, 0, 8, 1);
             master = ModbusMasterTcpUtil.getMasterInstance("127.0.0.1", 502);
             System.out.println(ModbusMasterTcpUtil.readSingleHoldingRegisters(master, 0, 1));
-            ModbusMasterTcpUtil.WriteSingleRegisterRequest(master, 0, 7, 1);
+            ModbusMasterTcpUtil.WriteSingleRegisterRequest(master, 0, 4, 1);
 //            ModbusMasterTcpUtil.WriteSingleRegisterRequest(master, 0, 4, 2);
 //        ModbusPoolDBMS.stop("1");
 //        int value = ModbusMasterTcpUtil.readSingleHoldingRegisters(master, 0, 1);
 //        System.out.println(value);
 //        ModbusPoolDBMS.start("1");
             System.out.println(ModbusMasterTcpUtil.readSingleHoldingRegisters(master, 0, 1));
-            server.shutdown();
+//            server.shutdown();
+            Thread.sleep(60000);
 //        System.out.println(ModbusMasterTcpUtil.readSingleHoldingRegisters(master, 0, 1));
         } catch (InterruptedException e) {
             e.printStackTrace();

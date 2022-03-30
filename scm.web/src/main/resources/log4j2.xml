@@ -39,6 +39,11 @@
       <appender-ref ref="Console"/>
       <appender-ref ref="RollingFile"/> 
     </logger>
+    
+    <logger name="com.digitalpetri" level="info" additivity="false">
+      <appender-ref ref="Console"/>
+      <appender-ref ref="RollingFile"/> 
+    </logger>
 
     <root level='debug'>  
       <appender-ref ref="RollingFile"/>  

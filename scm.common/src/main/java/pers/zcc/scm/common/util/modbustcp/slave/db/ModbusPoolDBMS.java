@@ -3,11 +3,16 @@ package pers.zcc.scm.common.util.modbustcp.slave.db;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionUsageException;
+
+import pers.zcc.scm.common.util.EnvironmentProps;
 
 /**
  * modbus slave 数据池管理系统
@@ -56,6 +61,7 @@ public class ModbusPoolDBMS {
             LOGGER.error("Serializer.deserialize() e,", e);
         }
         setStatus(DBStatus.RUNNING, unitId);
+        setRdb(useRDBConfig, rdbPeriodConfig);
     }
 
     public static void stop(String unitId) {
@@ -68,6 +74,42 @@ public class ModbusPoolDBMS {
         } catch (IOException e) {
             LOGGER.error("Serializer.deserialize() e,", e);
         }
+    }
+
+    private static int useRDBConfig = EnvironmentProps.getAppPropAsInteger("scm.common.modbusslave.useRDB", 0);
+
+    private static long rdbPeriodConfig = EnvironmentProps.getAppPropAsLong("scm.common.modbusslave.rdbPeriod",
+            10 * 60 * 1000);
+
+    private static ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+
+    /**
+     * use rdb to serialize data at fix rate
+     * @param useRDB set 1 to use rdb. else close rdb
+     * @param rdbPeriod period to serialize data
+     */
+    public static void setRdb(int useRDB, long rdbPeriod) {
+        if (useRDB == 1) {
+            if (scheduledExecutorService.isShutdown() || scheduledExecutorService.isTerminated()) {
+                scheduledExecutorService = null;
+                scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+            }
+            scheduledExecutorService.scheduleAtFixedRate(() -> {
+                try {
+                    Serializer.serialize();
+                } catch (IOException e) {
+                    LOGGER.error("Serializer.deserialize() e,", e);
+                }
+            }, 0, rdbPeriod, TimeUnit.MILLISECONDS);
+        } else {
+            try {
+                scheduledExecutorService.awaitTermination(2000, TimeUnit.MILLISECONDS);
+                scheduledExecutorService.shutdown();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
     private static void setStatus(DBStatus status, String unitId) {

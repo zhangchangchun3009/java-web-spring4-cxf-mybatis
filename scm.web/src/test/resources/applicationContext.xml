@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:p="http://www.springframework.org/schema/p"
+      xmlns:context="http://www.springframework.org/schema/context"
+      xmlns:tx="http://www.springframework.org/schema/tx"
+      xmlns:aop="http://www.springframework.org/schema/aop"
+      xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+      xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
+      xmlns:replica-query="http://shardingsphere.apache.org/schema/shardingsphere/replica-query"
+      xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/aop 
+       http://www.springframework.org/schema/aop/spring-aop.xsd
+       http://www.springframework.org/schema/jdbc 
+       http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://shardingsphere.apache.org/schema/shardingsphere/datasource
+       http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
+       http://shardingsphere.apache.org/schema/shardingsphere/replica-query
+       http://shardingsphere.apache.org/schema/shardingsphere/replica-query/replica-query.xsd
+       ">
+ 
+   <!-- 配置包扫描器 -->
+   <context:component-scan base-package="pers.zcc" />
+   <context:annotation-config />
+   <aop:aspectj-autoproxy proxy-target-class="true"/>
+   <context:property-placeholder ignore-unresolvable="true" location="classpath:conf/${spring.profiles.active}/application.properties"/>
+   
+   <import resource="classpath*:/config/*.services.xml" />
+   <import resource="classpath*:/config/*.beans.xml" />
+    
+   <!-- 添加事务支持 -->
+    <bean id="txManager"
+        class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="shardingDataSource" />
+    </bean>
+    
+	  <tx:advice id="txAdvice" transaction-manager="txManager">  
+	  <!-- 配置这个事务建议的属性 -->  
+	  <tx:attributes>  
+	    <!-- 指定所有get开头的方法执行在只读事务上下文中 -->  
+	    <tx:method name="get*" read-only="true"/>
+	    <tx:method name="find*" read-only="true"/>
+	    <tx:method name="query*" read-only="true"/>
+	    <tx:method name="select*" read-only="true"/>   
+	    <!-- 其余方法执行在默认的读写上下文中 -->
+	    <tx:method name="update*" read-only="false" propagation="REQUIRED" />  
+	    <tx:method name="insert*" read-only="false" propagation="REQUIRED" />
+	    <tx:method name="create*" read-only="false" propagation="REQUIRED" />
+	    <tx:method name="delete*" read-only="false" propagation="REQUIRED" />
+	    <tx:method name="batch*" read-only="false" propagation="REQUIRED" />
+	    <tx:method name="*" read-only="false" propagation="REQUIRED" />  
+	  </tx:attributes>  
+	  </tx:advice>  
+	    
+	  <aop:config>  
+		  <aop:pointcut id="pointcut" expression="execution(* pers.zcc..service.impl.*.*(..))"/>  
+		  <aop:advisor advice-ref="txAdvice" pointcut-ref="pointcut"/>  
+	  </aop:config>  
+
+    <!-- 注册事务管理驱动 -->
+    <tx:annotation-driven transaction-manager="txManager" />
+    
+    <bean id="write_ds1" class="org.apache.commons.dbcp2.BasicDataSource">
+        <property name="driverClassName" value="${scm.datasource.jdbc.driverClassName}" />
+        <property name="url" value="${scm.datasource.jdbc.ds1.write.url}" />
+        <property name="username" value="${scm.datasource.jdbc.ds1.write.username}" />
+        <property name="password" value="${scm.datasource.jdbc.ds1.write.password}" />
+        <!-- 最大连接数 -->
+        <property name="maxTotal" value="${scm.datasource.jdbc.ds1.write.maxTotal}"/>
+        <!-- 最大空闲连接数 -->
+        <property name="maxIdle" value="${scm.datasource.jdbc.ds1.write.maxIdle}"/>
+        <!-- 初始化连接数 -->
+        <property name="initialSize" value="${scm.datasource.jdbc.ds1.write.initialSize}"/>
+        <property name="testWhileIdle" value="${scm.datasource.jdbc.ds1.write.testWhileIdle}"/>
+        <property name="timeBetweenEvictionRunsMillis" value="${scm.datasource.jdbc.ds1.write.timeBetweenEvictionRunsMillis}"/>
+        <property name="numTestsPerEvictionRun" value="${scm.datasource.jdbc.ds1.write.numTestsPerEvictionRun}"/>
+        <property name="minEvictableIdleTimeMillis" value="${scm.datasource.jdbc.ds1.write.minEvictableIdleTimeMillis}"/>
+        <property name="testOnBorrow" value="false"/>
+        <property name="validationQuery" value="${scm.datasource.jdbc.ds1.write.validationQuery}"/>
+        <property name="validationQueryTimeout" value="${scm.datasource.jdbc.ds1.write.validationQueryTimeoutSeconds}" />
+    </bean>
+    
+    <bean id="read_ds1_1" class="org.apache.commons.dbcp2.BasicDataSource">
+        <property name="driverClassName" value="${scm.datasource.jdbc.driverClassName}" />
+        <property name="url" value="${scm.datasource.jdbc.ds1.read1.url}" />
+        <property name="username" value="${scm.datasource.jdbc.ds1.read1.username}" />
+        <property name="password" value="${scm.datasource.jdbc.ds1.read1.password}" />
+        <!-- 最大连接数 -->
+        <property name="maxTotal" value="${scm.datasource.jdbc.ds1.read1.maxTotal}"/>
+        <!-- 最大空闲连接数 -->
+        <property name="maxIdle" value="${scm.datasource.jdbc.ds1.read1.maxIdle}"/>
+        <!-- 初始化连接数 -->
+        <property name="initialSize" value="${scm.datasource.jdbc.ds1.read1.initialSize}"/>
+        <property name="testWhileIdle" value="${scm.datasource.jdbc.ds1.read1.testWhileIdle}"/>
+        <property name="timeBetweenEvictionRunsMillis" value="${scm.datasource.jdbc.ds1.read1.timeBetweenEvictionRunsMillis}"/>
+        <property name="numTestsPerEvictionRun" value="${scm.datasource.jdbc.ds1.read1.numTestsPerEvictionRun}"/>
+        <property name="minEvictableIdleTimeMillis" value="${scm.datasource.jdbc.ds1.read1.minEvictableIdleTimeMillis}"/>
+        <property name="testOnBorrow" value="false"/>
+        <property name="validationQuery" value="${scm.datasource.jdbc.ds1.read1.validationQuery}"/>
+        <property name="validationQueryTimeout" value="${scm.datasource.jdbc.ds1.read1.validationQueryTimeoutSeconds}" />
+    </bean>
+    
+    <!-- 主从配置负载均衡策略 -->
+    <replica-query:load-balance-algorithm id="randomStrategy" type="RANDOM" />
+    
+    <!-- 主从规则配置 一主多从-->
+    <replica-query:rule id="readWriteSplittingRule">
+        <replica-query:data-source-rule id="ds_1" 
+        primary-data-source-name="write_ds1" 
+        replica-data-source-names="read_ds1_1" 
+        load-balance-algorithm-ref="randomStrategy" />
+    </replica-query:rule>
+    
+    <shardingsphere:data-source id="shardingDataSource" data-source-names="write_ds1,read_ds1_1" rule-refs="readWriteSplittingRule" >
+        <props>
+            <prop key="sql-show">true</prop>
+        </props>
+    </shardingsphere:data-source>
+    
+    
+   
+   
+	<!-- 配置SqlSessionFactoryBean -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+	    <!-- 引用数据源组件 -->
+	    <property name="dataSource" ref="shardingDataSource" />
+	    <!-- 引用MyBatis配置文件中的配置 -->
+	    <property name="mapperLocations" value="classpath*:pers/zcc/**/*Dao.xml " />
+	    <property name="configLocation" value="classpath:mybatis-config.xml" />
+			    <!-- pageHelper 分页插件 -->
+		<property name="plugins">
+			  <array>
+				   <bean class="com.github.pagehelper.PageInterceptor">
+                        <property name="properties">
+                             <value>
+                              helperDialect=mysql
+                              rowBoundsWithCount=true
+                             </value>
+                        </property>
+                   </bean>
+			  </array>
+		</property>
+	</bean>
+ 
+   <!-- Mapper代理开发，使用Spring自动扫描MyBatis的接口并装配 （Sprinh将指定包中的所有被@Mapper注解标注的接口自动装配为MyBatis的映射接口） -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+	    <!-- mybatis-spring组件的扫描器，*.dao只需要接口（接口方法与SQL映射文件中的相同） -->
+	    <property name="basePackage" value="pers.zcc.**.dao" />
+	    <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+	</bean>
+
+    
+</beans>

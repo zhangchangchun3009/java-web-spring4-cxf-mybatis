@@ -1,9 +1,12 @@
 package pers.zcc.scm.common.util.modbustcp.slave.db;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeoutException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionUsageException;
 
 /**
@@ -12,6 +15,7 @@ import org.springframework.transaction.TransactionUsageException;
  * @since 2021年12月13日
  */
 public class ModbusPoolDBMS {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ModbusPoolDBMS.class);
 
     private static Map<String, ModbusPoolDB> instanceHolder = new ConcurrentHashMap<>(4);
 
@@ -22,7 +26,11 @@ public class ModbusPoolDBMS {
         instanceHolder.putIfAbsent(unitId, new ModbusPoolDB(capacity));
     }
 
-    private static ModbusPoolDB getInstance(String unitId) {
+    static Map<String, ModbusPoolDB> getInstanceHolder() {
+        return instanceHolder;
+    }
+
+    static ModbusPoolDB getInstance(String unitId) {
         return instanceHolder.get(unitId);
     }
 
@@ -32,6 +40,38 @@ public class ModbusPoolDBMS {
             throw new IllegalArgumentException("unit Id doesn't exist!");
         }
         return db.getCapacity();
+    }
+
+    public static DBStatus getStatus(String unitId) {
+        return getInstance(unitId).getStatus();
+    }
+
+    public static void start(String unitId) {
+        if (getStatus(unitId) == DBStatus.RUNNING) {
+            return;
+        }
+        try {
+            Serializer.deserialize();
+        } catch (IOException e) {
+            LOGGER.error("Serializer.deserialize() e,", e);
+        }
+        setStatus(DBStatus.RUNNING, unitId);
+    }
+
+    public static void stop(String unitId) {
+        if (getStatus(unitId) == DBStatus.STOPPED) {
+            return;
+        }
+        setStatus(DBStatus.STOPPED, unitId);
+        try {
+            Serializer.serialize();
+        } catch (IOException e) {
+            LOGGER.error("Serializer.deserialize() e,", e);
+        }
+    }
+
+    private static void setStatus(DBStatus status, String unitId) {
+        getInstance(unitId).setStatus(status);
     }
 
     /**
@@ -80,19 +120,56 @@ public class ModbusPoolDBMS {
         getInstance(unitId).writeMultiRegister(add, quantity, value, writeTransactionId);
     }
 
-    private static class ModbusPoolDB {
-        /** The holding registers. */
-        private final short[] holdingRegisters;
+    public enum DBStatus {
+        STARTING(0), RUNNING(1), STOPPED(2);
 
-        private volatile int[] writeLocks;
+        int value;
+
+        DBStatus(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
+
+        static DBStatus switchValue(int value) {
+            switch (value) {
+            case 0:
+                return STARTING;
+            case 1:
+                return RUNNING;
+            case 2:
+                return STOPPED;
+            default:
+                throw new IllegalArgumentException();
+            }
+        }
+    }
+
+    static class ModbusPoolDB {
+        /** The holding registers. */
+        final short[] holdingRegisters;
+
+        volatile int[] writeLocks;
 
         private Object lock = new Object();
 
-        public int getCapacity() {
+        private volatile int status;
+
+        DBStatus getStatus() {
+            return DBStatus.switchValue(status);
+        }
+
+        void setStatus(DBStatus status) {
+            this.status = status.getValue();
+        }
+
+        int getCapacity() {
             return holdingRegisters.length;
         }
 
-        public ModbusPoolDB(int capacity) {
+        ModbusPoolDB(int capacity) {
             this.holdingRegisters = new short[capacity];
             writeLocks = new int[capacity];
         }
@@ -119,7 +196,9 @@ public class ModbusPoolDBMS {
             return -1;
         }
 
-        public short[] readHoldingRegister(int add, int quantity) throws TimeoutException, IndexOutOfBoundsException {
+        short[] readHoldingRegister(int add, int quantity)
+                throws TimeoutException, IndexOutOfBoundsException, DatabaseNotInServiceException {
+            checkRunning();
             if (add < 0 || quantity <= 0 || add + quantity > holdingRegisters.length) {
                 throw new IndexOutOfBoundsException();
             }
@@ -156,13 +235,21 @@ public class ModbusPoolDBMS {
             }
         }
 
-        public void writeSingleRegister(int add, short value, int writeTransactionId)
-                throws TransactionUsageException, IndexOutOfBoundsException {
+        void writeSingleRegister(int add, short value, int writeTransactionId)
+                throws TransactionUsageException, IndexOutOfBoundsException, DatabaseNotInServiceException {
+            checkRunning();
             writeMultiRegister(add, 1, new short[] { value }, writeTransactionId);
         }
 
-        public void writeMultiRegister(int add, int quantity, short[] value, int writeTransactionId)
-                throws TransactionUsageException, IndexOutOfBoundsException {
+        private void checkRunning() {
+            if (status != DBStatus.RUNNING.getValue()) {
+                throw new DatabaseNotInServiceException();
+            }
+        }
+
+        void writeMultiRegister(int add, int quantity, short[] value, int writeTransactionId)
+                throws TransactionUsageException, IndexOutOfBoundsException, DatabaseNotInServiceException {
+            checkRunning();
             if (add < 0 || quantity <= 0 || add + quantity > holdingRegisters.length) {
                 throw new IndexOutOfBoundsException();
             }

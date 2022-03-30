@@ -66,30 +66,30 @@ public class ModbusSlaveTcpServer {
 
         private List<String> tempUnitList = new ArrayList<String>();
 
-        Builder bindHostAddress(String bindHostAddress) {
+        public Builder bindHostAddress(String bindHostAddress) {
             this.bindHostAddress = bindHostAddress;
             return this;
         }
 
-        Builder port(int port) {
+        public Builder port(int port) {
             this.port = port;
             return this;
         }
 
-        Builder serverId(short serverId) {
+        public Builder serverId(short serverId) {
             this.serverId = serverId;
             return this;
         }
 
-        Builder addUnit(int unitId, int poolSize) {
+        public Builder addUnit(int unitId, int poolSize) {
             if (tempUnitList.contains(String.valueOf(unitId))) {
-                throw new IllegalArgumentException("unitId " + unitId + "exists");
+                throw new IllegalArgumentException("unitId " + unitId + "doesn't exist");
             }
             tempUnitList.add(createUnitInstance(unitId, poolSize));
             return this;
         }
 
-        ModbusSlaveTcpServer build() {
+        public ModbusSlaveTcpServer build() {
             ModbusSlaveTcpServer slave = new ModbusSlaveTcpServer(bindHostAddress, port, serverId);
             if (tempUnitList.isEmpty()) {
                 tempUnitList.add(createUnitInstance(1, 256));
@@ -119,6 +119,9 @@ public class ModbusSlaveTcpServer {
     }
 
     public void start() {
+        for (String unitId : unitList) {
+            ModbusPoolDBMS.start(unitId);
+        }
         ModbusTcpSlaveConfig config = new ModbusTcpSlaveConfig.Builder().setInstanceId(String.valueOf(serverId))
                 .build();
         server = new ModbusTcpSlave(config);
@@ -133,6 +136,9 @@ public class ModbusSlaveTcpServer {
     }
 
     public void shutdown() {
+        for (String unitId : unitList) {
+            ModbusPoolDBMS.stop(unitId);
+        }
         server.shutdown();
         Modbus.releaseSharedResources();
     }

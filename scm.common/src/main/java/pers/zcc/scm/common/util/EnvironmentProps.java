@@ -21,6 +21,20 @@ public class EnvironmentProps {
 
     private static String baseDir = EnvironmentProps.class.getClassLoader().getResource("").getPath();
 
+    private static String appPropPath = baseDir + "conf/" + activeProfile + "/application.properties";
+
+    public static String getActiveProfile() {
+        return activeProfile;
+    }
+
+    public static String getBaseDir() {
+        return baseDir;
+    }
+
+    public static String getAppPropPath() {
+        return appPropPath;
+    }
+
     public static Properties getProperties(String path) {
         Properties properties = new Properties();
         try {
@@ -49,7 +63,32 @@ public class EnvironmentProps {
     }
 
     public static String getApplicationProp(String key) {
-        return getProperty(baseDir + "conf/" + activeProfile + "/application.properties", key);
+        return getProperty(appPropPath, key);
+    }
+
+    public static int getAppPropAsInteger(String key, int defaultValue) throws NumberFormatException {
+        return getInteger(appPropPath, key, defaultValue);
+    }
+
+    /**
+     * get value as long
+     * @param key
+     * @param defaultValue
+     * @return
+     * @throws NumberFormatException
+     */
+    public static long getAppPropAsLong(String key, long defaultValue) throws NumberFormatException {
+        return getLong(appPropPath, key, defaultValue);
+    }
+
+    /**
+     * get value as string
+     * @param key
+     * @param defaultValue
+     * @return
+     */
+    public static String getAppPropAsString(String key, String defaultValue) {
+        return getString(appPropPath, key, defaultValue);
     }
 
     /**

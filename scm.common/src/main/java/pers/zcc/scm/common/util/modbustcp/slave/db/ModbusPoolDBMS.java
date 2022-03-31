@@ -74,6 +74,7 @@ public class ModbusPoolDBMS {
         } catch (IOException e) {
             LOGGER.error("Serializer.deserialize() e,", e);
         }
+        setRdb(0, 0);
     }
 
     private static int useRDBConfig = EnvironmentProps.getAppPropAsInteger("scm.common.modbusslave.useRDB", 0);

@@ -69,12 +69,12 @@ public class ModbusPoolDBMS {
             return;
         }
         setStatus(DBStatus.STOPPED, unitId);
+        setRdb(0, 0);
         try {
             Serializer.serialize();
         } catch (IOException e) {
             LOGGER.error("Serializer.deserialize() e,", e);
         }
-        setRdb(0, 0);
     }
 
     private static int useRDBConfig = EnvironmentProps.getAppPropAsInteger("scm.common.modbusslave.useRDB", 0);

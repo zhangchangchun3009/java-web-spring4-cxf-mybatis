@@ -14,7 +14,7 @@ import com.digitalpetri.modbus.slave.ModbusTcpSlave;
 import com.digitalpetri.modbus.slave.ModbusTcpSlaveConfig;
 
 import pers.zcc.scm.common.util.modbustcp.slave.db.ModbusPoolDBMS;
-import pers.zcc.scm.common.util.modbustcp.slave.requesthandler.HoldingRegisterRequestHandle;
+import pers.zcc.scm.common.util.modbustcp.slave.requesthandler.HoldingRegisterRequestHandler;
 
 /**
  * The Class ModbusSlaveTcpServer.
@@ -125,7 +125,7 @@ public class ModbusSlaveTcpServer {
         ModbusTcpSlaveConfig config = new ModbusTcpSlaveConfig.Builder().setInstanceId(String.valueOf(serverId))
                 .build();
         server = new ModbusTcpSlave(config);
-        server.setRequestHandler(new HoldingRegisterRequestHandle());
+        server.setRequestHandler(new HoldingRegisterRequestHandler());
         CompletableFuture<ModbusTcpSlave> future = server.bind(bindHostAddress, port);
         try {
             future.get();

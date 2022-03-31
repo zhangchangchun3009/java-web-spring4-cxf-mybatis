@@ -26,14 +26,14 @@ import pers.zcc.scm.common.util.modbustcp.slave.event.ModbusSlaveEventType;
 import pers.zcc.scm.common.util.modbustcp.slave.event.ModbusSlaveRWEventDispatcher;
 
 /**
- * The Class HoldingRegisterRequestHandle.
+ * The Class HoldingRegisterRequestHandler.
  *
  * @author zcc
  * @since 2021年12月13日
  */
-public class HoldingRegisterRequestHandle implements ServiceRequestHandler {
+public class HoldingRegisterRequestHandler implements ServiceRequestHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(HoldingRegisterRequestHandle.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(HoldingRegisterRequestHandler.class);
 
     @Override
     public void onReadHoldingRegisters(

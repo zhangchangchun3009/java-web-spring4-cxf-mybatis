@@ -22,7 +22,6 @@ import com.digitalpetri.modbus.responses.ReadInputRegistersResponse;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.util.ReferenceCountUtil;
-import pers.zcc.scm.common.util.ByteUtil;
 
 /**
  * The Class ModbusMasterTcpUtil.
@@ -114,15 +113,18 @@ public class ModbusMasterTcpUtil {
      * @throws InterruptedException 异常
      * @throws ExecutionException 异常
      */
-    public static synchronized Number readHoldingRegisters(ModbusTcpMaster master, int address, int quantity,
+    public static synchronized byte[] readHoldingRegisters(ModbusTcpMaster master, int address, int quantity,
             int unitId) throws InterruptedException, ExecutionException {
-        Number result = null;
+        byte[] result = null;
         ReadHoldingRegistersRequest request = new ReadHoldingRegistersRequest(address, quantity);
         CompletableFuture<ReadHoldingRegistersResponse> future = master.sendRequest(request, unitId);
         ReadHoldingRegistersResponse readHoldingRegistersResponse = future.get();// 工具类做的同步返回.实际使用推荐结合业务进行异步处理
         if (readHoldingRegistersResponse != null) {
             ByteBuf buf = readHoldingRegistersResponse.getRegisters();
-            result = buf.readDouble();
+            result = new byte[buf.readableBytes()];
+            for (int i = 0; i < result.length; i++) {
+                result[i] = buf.getByte(i);
+            }
             ReferenceCountUtil.release(readHoldingRegistersResponse);
         }
         return result;
@@ -161,18 +163,19 @@ public class ModbusMasterTcpUtil {
      * @throws InterruptedException 异常
      * @throws ExecutionException 异常
      */
-    public static synchronized Number readInputRegisters(ModbusTcpMaster master, int address, int quantity, int unitId)
+    public static synchronized ByteBuf readInputRegisters(ModbusTcpMaster master, int address, int quantity, int unitId)
             throws InterruptedException, ExecutionException {
-        Number result = null;
         CompletableFuture<ReadInputRegistersResponse> future = master
                 .sendRequest(new ReadInputRegistersRequest(address, quantity), unitId);
         ReadInputRegistersResponse readInputRegistersResponse = future.get();// 工具类做的同步返回.实际使用推荐结合业务进行异步处理
         if (readInputRegistersResponse != null) {
-            ByteBuf buf = readInputRegistersResponse.getRegisters();
-            result = buf.readDouble();
-            ReferenceCountUtil.release(readInputRegistersResponse);
+            try {
+                return readInputRegistersResponse.getRegisters();
+            } finally {
+                ReferenceCountUtil.release(readInputRegistersResponse);
+            }
         }
-        return result;
+        return null;
     }
 
     // 功能码0X06 写入单个寄存器
@@ -191,12 +194,10 @@ public class ModbusMasterTcpUtil {
     }
 
     // 功能码0X10 写入多个寄存器
-    public static synchronized void WriteMultipleRegistersRequest(ModbusTcpMaster master, int address, float values,
+    public static synchronized void WriteMultipleRegistersRequest(ModbusTcpMaster master, int address, byte[] values,
             int quantity, int unitId) {
-        // float类型转字节数组
-        byte[] bytes = ByteUtil.getBytes(values);
         // 转netty需要的字节类型
-        ByteBuf byteBuf = Unpooled.wrappedBuffer(bytes);
+        ByteBuf byteBuf = Unpooled.wrappedBuffer(values);
         // 发送多个寄存器数据，数据类型由quantity决定，2是float类型，4是double类型
         master.sendRequest(new WriteMultipleRegistersRequest(address, quantity, byteBuf), unitId);
         try {
@@ -226,8 +227,7 @@ public class ModbusMasterTcpUtil {
                 // 读取模拟量
                 System.out.println("1 " + i + ":" + Integer.toBinaryString(r));
             }
-            Number num = ModbusMasterTcpUtil.readHoldingRegisters(master, 0, 4, 1);
-            byte[] res = ByteUtil.getBytes(num.doubleValue());
+            byte[] res = ModbusMasterTcpUtil.readHoldingRegisters(master, 0, 4, 1);
             for (byte bt : res) {
                 System.out.println(Integer.toBinaryString(bt));
             }

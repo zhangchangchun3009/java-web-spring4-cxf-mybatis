@@ -28,9 +28,9 @@ import pers.zcc.scm.common.vo.Response;
 public class ScmWebSocketServer extends WebSocketServer {
     private static final Logger LOGGER = LoggerFactory.getLogger(ScmWebSocketServer.class);
 
-    private static AtomicInteger connectionCount = new AtomicInteger(0);
+    private AtomicInteger connectionCount = new AtomicInteger(0);
 
-    private static ConcurrentHashMap<Integer, WebSocket> connections = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Integer, WebSocket> connections = new ConcurrentHashMap<>();
 
     private static WebsocketServiceResolver resolver = ApplicationContextManager
             .getBean(WebsocketServiceResolver.class);
@@ -42,7 +42,7 @@ public class ScmWebSocketServer extends WebSocketServer {
         LOGGER.info("websocket Server start at port:" + port);
     }
 
-    public static int getConnectionNum() {
+    public int getConnectionNum() {
         return connectionCount.get();
     }
 

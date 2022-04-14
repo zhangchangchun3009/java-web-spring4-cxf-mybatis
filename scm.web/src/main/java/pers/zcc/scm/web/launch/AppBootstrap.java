@@ -8,8 +8,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
 
-import javax.servlet.ServletException;
-
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleState;
 import org.apache.catalina.Server;
@@ -120,30 +118,23 @@ public class AppBootstrap {
         LOGGER.info("tomcat start at contextPath:" + contextPath);
         tomcat.setBaseDir(baseDir);
         tomcat.setPort(port);
-        try {
-            tomcat.addWebapp(contextPath, baseDir);
-        } catch (ServletException e) {
-            LOGGER.error("tomcat start failed:", e);
-        }
+        tomcat.addWebapp(contextPath, baseDir);
         tomcat.enableNaming();
         Server server = tomcat.getServer();
         server.setPort(shutdownPort);
         server.setShutdown(shutdownCmd);
         Service service = tomcat.getService();
-        Connector httpConnector = new Connector();
+        Connector httpConnector = new Connector("HTTP/1.1");
         httpConnector.setPort(port);
         httpConnector.setRedirectPort(sslPort);
         httpConnector.setAsyncTimeout(requestTimeoutMs);
-        httpConnector.setProtocol("HTTP/1.1");
         httpConnector.setScheme("http");
         httpConnector.setProperty("maxThreads", maxThread);
-        tomcat.setConnector(httpConnector);
         service.addConnector(httpConnector);
 
-        Connector sslConnector = new Connector();
+        Connector sslConnector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
         sslConnector.setPort(sslPort);
         sslConnector.setAsyncTimeout(requestTimeoutMs);
-        sslConnector.setProtocol("org.apache.coyote.http11.Http11NioProtocol");
         sslConnector.setScheme("https");
         sslConnector.setProperty("maxThreads", maxThread);
         sslConnector.setProperty("SSLEnabled", "true");

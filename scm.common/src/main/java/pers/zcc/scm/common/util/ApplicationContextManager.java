@@ -9,6 +9,8 @@ import java.util.Map;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
 
+import pers.zcc.scm.common.spring.event.AppCustomizedEvent;
+
 /**
  * The Class ApplicationContextManager.
  *
@@ -24,6 +26,10 @@ public class ApplicationContextManager {
 
     public static WebApplicationContext getApplicationContext() {
         return CONTEXT;
+    }
+
+    public static void publishEvent(AppCustomizedEvent<?> event) {
+        CONTEXT.publishEvent(event);
     }
 
     public static Object getBean(String beanName) {

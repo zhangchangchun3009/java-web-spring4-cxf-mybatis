@@ -154,5 +154,15 @@
 	    <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
 	</bean>
 
+    <bean name="springEventExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="corePoolSize" value="2"/>
+        <property name="maxPoolSize" value="16" />
+        <property name="queueCapacity" value="3000" />
+        <property name="keepAliveSeconds" value="60" />
+    </bean>
+    
+    <bean name="applicationEventMulticaster" class="org.springframework.context.event.SimpleApplicationEventMulticaster">
+        <property name="taskExecutor" ref="springEventExecutor" />
+    </bean>
     
 </beans>

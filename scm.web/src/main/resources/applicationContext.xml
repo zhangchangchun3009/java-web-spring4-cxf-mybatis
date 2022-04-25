@@ -56,11 +56,11 @@
 	    <tx:method name="*" read-only="false" propagation="REQUIRED" />  
 	  </tx:attributes>  
 	  </tx:advice>  
-	    
+	  
 	  <aop:config>  
-		  <aop:pointcut id="pointcut" expression="execution(* pers.zcc..service.impl.*.*(..))"/>  
-		  <aop:advisor advice-ref="txAdvice" pointcut-ref="pointcut"/>  
-	  </aop:config>  
+          <aop:pointcut id="pointcut"  expression="within(pers.zcc..service.impl.*)&amp;&amp;execution(public * *(..))&amp;&amp;!@annotation(org.springframework.transaction.annotation.Transactional)&amp;&amp;!@within(org.springframework.transaction.annotation.Transactional)" />  
+          <aop:advisor advice-ref="txAdvice" pointcut-ref="pointcut"/>
+      </aop:config>   
 
     <!-- 注册事务管理驱动 -->
     <tx:annotation-driven transaction-manager="txManager" />

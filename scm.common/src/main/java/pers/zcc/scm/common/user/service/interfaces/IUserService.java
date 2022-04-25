@@ -75,18 +75,6 @@ public interface IUserService {
     Response<String> regist(@Context HttpServletRequest request, @Context HttpServletResponse response, UserVO param);
 
     /**
-     * Login.
-     *
-     * @param request the request
-     * @param response the response
-     * @param param the param
-     * @return the response
-     */
-    @POST
-    @Path("/login")
-    Response<String> login(@Context HttpServletRequest request, @Context HttpServletResponse response, UserVO param);
-
-    /**
      * Login by token.
      *
      * @param request  the request

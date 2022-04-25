@@ -6,13 +6,13 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.PhaseInterceptorChain;
 import org.apache.cxf.transport.http.AbstractHTTPDestination;
 
+import pers.zcc.scm.common.frame.UserCache;
 import pers.zcc.scm.common.user.vo.UserVO;
 
 /**
@@ -24,17 +24,12 @@ import pers.zcc.scm.common.user.vo.UserVO;
 public class HttpContextManager {
 
     /**
-     * Gets the user.
+     * Gets the user.业务代码可调用
      *
      * @return the user
      */
     public static UserVO getUser() {
-        HttpServletRequest request = getRequest();
-        if (request == null) {
-            return null;
-        }
-        HttpSession session = request.getSession();
-        return session == null ? null : (UserVO) session.getAttribute("user");
+        return UserCache.getUser();
     }
 
     /**

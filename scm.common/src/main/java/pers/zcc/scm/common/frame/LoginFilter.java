@@ -14,7 +14,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -57,14 +56,6 @@ public class LoginFilter implements Filter {
             throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-        HttpSession session = httpServletRequest.getSession();
-        //本地测试接口时放开以下注释代码获取登录状态和接口权限
-//        UserVO mocku = new UserVO();
-//        mocku.setId(999);
-//        mocku.setUserName("zcc");
-//        mocku.setUserId(998);
-//        mocku.setUserType("system");
-//        session.setAttribute("user", mocku);
         String path = httpServletRequest.getRequestURI();
         LOGGER.debug(path);
         if (!urlWhiteList.isEmpty()) {
@@ -84,7 +75,7 @@ public class LoginFilter implements Filter {
                         .write("{\"code\":\"401\",\"message\":\"未携带应用Id\"}".getBytes("utf-8"));
                 return;
             }
-            if (session.getAttribute("user") == null) {
+            if (UserCache.getUser() == null) {
                 UserVO queryParam = new UserVO();
                 queryParam.setUserName(appId);
                 queryParam.setUserType(UserTypeEnum.VIRTUAL.getValue());
@@ -96,7 +87,7 @@ public class LoginFilter implements Filter {
                             .write("{\"code\":\"401\",\"message\":\"应用未授权，请联系管理员授权\"}".getBytes("utf-8"));
                     return;
                 }
-                session.setAttribute("user", user);
+                UserCache.setUser(user);
             }
         } else {
             String token = httpServletRequest.getHeader("Authorization");
@@ -113,7 +104,7 @@ public class LoginFilter implements Filter {
                         .write("{\"code\":\"403\",\"message\":\"您当前未登录或登录已失效，请登录后继续操作\"}".getBytes("utf-8"));
                 return;
             } else {
-                session.setAttribute("user", authVO.getUser());//redis服务器
+                UserCache.setUser(authVO.getUser());//redis服务器
             }
         }
         chain.doFilter(request, response);

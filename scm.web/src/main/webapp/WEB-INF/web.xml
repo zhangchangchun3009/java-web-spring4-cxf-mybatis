@@ -54,10 +54,6 @@
     <listener-class>pers.zcc.scm.common.frame.SlfContextLoaderListener</listener-class>
   </listener>
   
-  <listener>
-    <listener-class>pers.zcc.scm.common.frame.SlfHttpSessionListener</listener-class>
-  </listener>
-  
   <servlet>
     <servlet-name>AlipayNotifyServlet</servlet-name>
     <servlet-class>pers.zcc.scm.web.servlet.AlipayNotifyServlet</servlet-class>

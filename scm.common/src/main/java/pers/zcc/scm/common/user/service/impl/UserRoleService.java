@@ -12,8 +12,8 @@ import org.springframework.util.CollectionUtils;
 
 import pers.zcc.scm.common.constant.Constants;
 import pers.zcc.scm.common.dao.IPrivilegeDao;
-import pers.zcc.scm.common.privilege.Privilege;
-import pers.zcc.scm.common.privilege.Resource;
+import pers.zcc.scm.common.frame.privillege.Privilege;
+import pers.zcc.scm.common.frame.privillege.Resource;
 import pers.zcc.scm.common.user.service.interfaces.IUserRoleService;
 import pers.zcc.scm.common.user.vo.RoleVO;
 import pers.zcc.scm.common.user.vo.UserVO;

@@ -16,8 +16,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 import pers.zcc.scm.common.constant.Constants;
 import pers.zcc.scm.common.dao.IPrivilegeDao;
-import pers.zcc.scm.common.privilege.Privilege;
-import pers.zcc.scm.common.privilege.Resource;
+import pers.zcc.scm.common.frame.privillege.Privilege;
+import pers.zcc.scm.common.frame.privillege.Resource;
 import pers.zcc.scm.common.user.service.interfaces.IResourceService;
 import pers.zcc.scm.common.user.vo.ResourceVO;
 import pers.zcc.scm.common.util.ApplicationContextManager;

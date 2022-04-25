@@ -1,12 +1,11 @@
 
-package pers.zcc.scm.common.privilege;
+package pers.zcc.scm.common.frame;
 
 import java.lang.reflect.Method;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -18,6 +17,10 @@ import org.slf4j.LoggerFactory;
 
 import pers.zcc.scm.common.constant.UserTypeEnum;
 import pers.zcc.scm.common.dao.IUserDao;
+import pers.zcc.scm.common.frame.privillege.NoPrivilegeException;
+import pers.zcc.scm.common.frame.privillege.Privilege;
+import pers.zcc.scm.common.frame.privillege.Resource;
+import pers.zcc.scm.common.frame.privillege.SignatureVerifyException;
 import pers.zcc.scm.common.user.vo.ResourceVO;
 import pers.zcc.scm.common.user.vo.UserVO;
 import pers.zcc.scm.common.util.APISignUtil;
@@ -75,7 +78,7 @@ public class PrivilegeResolverAspect {
             throw e;
         } finally {
             reentrantLock.remove();
-            unregistPublicServicesCall(joinPoint);
+            UserCache.removeUser();
         }
     }
 
@@ -105,7 +108,7 @@ public class PrivilegeResolverAspect {
             throw e;
         } finally {
             reentrantLock.remove();
-            unregistPublicServicesCall(joinPoint);
+            UserCache.removeUser();
         }
         return result;
     }
@@ -165,14 +168,4 @@ public class PrivilegeResolverAspect {
         return false;
     }
 
-    private void unregistPublicServicesCall(ProceedingJoinPoint joinPoint) {
-        HttpServletRequest request = HttpContextManager.getRequest();
-        String path = request.getRequestURI();
-        if (path.contains("/publicservices/")) {
-            HttpSession session = request.getSession(false);
-            if (session != null) {
-                session.invalidate();
-            }
-        }
-    }
 }

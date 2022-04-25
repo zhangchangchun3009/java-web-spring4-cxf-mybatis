@@ -1,5 +1,5 @@
 
-package pers.zcc.scm.common.privilege;
+package pers.zcc.scm.common.frame.privillege;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;

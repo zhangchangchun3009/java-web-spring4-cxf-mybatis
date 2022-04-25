@@ -14,8 +14,8 @@ import com.github.pagehelper.PageInfo;
 
 import pers.zcc.scm.common.constant.Constants;
 import pers.zcc.scm.common.dao.IExcelErrorDao;
-import pers.zcc.scm.common.privilege.Privilege;
-import pers.zcc.scm.common.privilege.Resource;
+import pers.zcc.scm.common.frame.privillege.Privilege;
+import pers.zcc.scm.common.frame.privillege.Resource;
 import pers.zcc.scm.common.service.IExcelErrorService;
 import pers.zcc.scm.common.vo.BatchVO;
 import pers.zcc.scm.common.vo.ExcelErrorVO;

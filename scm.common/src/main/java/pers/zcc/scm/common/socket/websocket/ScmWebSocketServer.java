@@ -6,8 +6,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.servlet.http.HttpSession;
-
 import org.apache.http.ConnectionClosedException;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
@@ -18,11 +16,12 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import pers.zcc.scm.common.frame.HttpSessionContext;
+import pers.zcc.scm.common.frame.AuthorizationUtil;
 import pers.zcc.scm.common.socket.websocket.service.impl.WebsocketServiceResolver;
 import pers.zcc.scm.common.user.vo.UserVO;
 import pers.zcc.scm.common.util.ApplicationContextManager;
 import pers.zcc.scm.common.util.JacksonUtil;
+import pers.zcc.scm.common.vo.AuthorizationVO;
 import pers.zcc.scm.common.vo.Response;
 
 public class ScmWebSocketServer extends WebSocketServer {
@@ -92,15 +91,12 @@ public class ScmWebSocketServer extends WebSocketServer {
         LOGGER.info("now link number is " + onlineNum);
         String descriptor = clientHandshake.getResourceDescriptor();
         LOGGER.debug("url: " + descriptor);
-        String sessionId = descriptor.substring(descriptor.lastIndexOf("/") + 1);
-        HttpSession session = HttpSessionContext.getSession(sessionId);
-        if (session == null) {
-            return;
-        }
+        String token = descriptor.substring(descriptor.lastIndexOf("/") + 1);
         try {
+            AuthorizationVO authVO = AuthorizationUtil.decryptToken(token);
             UserVO user = null;
             try {
-                user = (UserVO) session.getAttribute("user");
+                user = authVO.getUser();
             } catch (Exception e) {
             }
             if (user == null) {
@@ -108,8 +104,8 @@ public class ScmWebSocketServer extends WebSocketServer {
             }
             Integer userId = user.getUserId();
             connections.putIfAbsent(userId, conn);
-        } finally {
-            HttpSessionContext.deleteSession(session);
+        } catch (Exception e) {
+            LOGGER.error("WebSocket getUser e,", e);
         }
     }
 

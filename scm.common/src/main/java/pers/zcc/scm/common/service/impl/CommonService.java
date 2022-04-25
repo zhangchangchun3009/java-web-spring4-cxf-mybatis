@@ -17,8 +17,8 @@ import org.slf4j.LoggerFactory;
 
 import pers.zcc.scm.common.constant.Constants;
 import pers.zcc.scm.common.dao.ISequenceDao;
-import pers.zcc.scm.common.privilege.Privilege;
-import pers.zcc.scm.common.privilege.Resource;
+import pers.zcc.scm.common.frame.privillege.Privilege;
+import pers.zcc.scm.common.frame.privillege.Resource;
 import pers.zcc.scm.common.service.ICommonService;
 import pers.zcc.scm.common.util.FileUtil;
 import pers.zcc.scm.common.vo.Response;

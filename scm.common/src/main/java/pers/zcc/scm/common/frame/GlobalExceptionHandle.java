@@ -13,8 +13,8 @@ import javax.ws.rs.ext.ExceptionMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pers.zcc.scm.common.privilege.NoPrivilegeException;
-import pers.zcc.scm.common.privilege.SignatureVerifyException;
+import pers.zcc.scm.common.frame.privillege.NoPrivilegeException;
+import pers.zcc.scm.common.frame.privillege.SignatureVerifyException;
 
 /**
  * The Class GlobalExceptionHandle.

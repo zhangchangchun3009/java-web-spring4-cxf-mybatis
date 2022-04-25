@@ -10,7 +10,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -24,8 +23,8 @@ import com.github.pagehelper.PageInfo;
 import pers.zcc.scm.common.constant.UserTypeEnum;
 import pers.zcc.scm.common.dao.IUserDao;
 import pers.zcc.scm.common.frame.AuthorizationUtil;
-import pers.zcc.scm.common.privilege.Privilege;
-import pers.zcc.scm.common.privilege.Resource;
+import pers.zcc.scm.common.frame.privillege.Privilege;
+import pers.zcc.scm.common.frame.privillege.Resource;
 import pers.zcc.scm.common.user.service.interfaces.IUserService;
 import pers.zcc.scm.common.user.vo.UserVO;
 import pers.zcc.scm.common.vo.PageVO;
@@ -144,44 +143,6 @@ public class UserService implements IUserService {
         return result;
     }
 
-    @Override
-    public Response<String> login(HttpServletRequest request, HttpServletResponse response, UserVO param) {
-        Response<String> result = new Response<String>().success();
-        if (param == null || StringUtils.isEmpty(param.getUserName())) {
-            return result.fail("001", "请输入信息");
-        }
-        UserVO userDb = userDao.findUser(param);
-        if (userDb == null) {
-            return result.fail("002", "请先注册");
-        }
-        if ("guest".equalsIgnoreCase(userDb.getUserName())) {
-            HttpSession session = request.getSession(true);
-            session.setAttribute("user", userDb);
-            return result;
-        }
-        if (StringUtils.isEmpty(param.getPassword())) {
-            return result.fail("005", "请输入密码");
-        }
-        String password = param.getPassword();
-        String encPassword = null;
-        try {
-            encPassword = DigestUtils.md5DigestAsHex(
-                    (ENCRYPT_PREFIX + DigestUtils.md5DigestAsHex(password.getBytes("utf-8"))).getBytes("utf-8"));
-        } catch (UnsupportedEncodingException e) {
-            LOGGER.error("login UnsupportedEncodingException", e);
-        }
-        if (!param.getUserName().equals(userDb.getUserName())) {
-            return result.fail("003", "用户不存在");
-        }
-        if (!encPassword.equals(userDb.getPassword())) {
-            return result.fail("004", "密码不正确");
-        }
-        userDb.setPassword(null);
-        HttpSession session = request.getSession(true);
-        session.setAttribute("user", userDb);
-        return result.success(session.getId());
-    }
-
     /**
      * init user:root  password:admin
      */
@@ -229,7 +190,6 @@ public class UserService implements IUserService {
     @Override
     public Response<String> logout(HttpServletRequest request, HttpServletResponse response, UserVO param) {
         Response<String> result = new Response<String>().success();
-        request.getSession().invalidate();
         return result;
     }
 

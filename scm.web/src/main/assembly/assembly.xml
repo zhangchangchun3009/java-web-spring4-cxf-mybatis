@@ -8,10 +8,11 @@
     
     <!--打包格式，允许同时有多个-->
     <formats>
+        <format>jar</format>
         <format>zip</format>
     </formats>
     
-    <includeBaseDirectory>true</includeBaseDirectory>
+    <includeBaseDirectory>false</includeBaseDirectory>
 
     <!--依赖jar包以及项目打包文件存储文件-->
     <dependencySets>

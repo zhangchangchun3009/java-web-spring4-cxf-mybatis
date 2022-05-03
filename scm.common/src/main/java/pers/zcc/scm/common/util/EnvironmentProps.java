@@ -1,8 +1,10 @@
 package pers.zcc.scm.common.util;
 
-import java.io.FileInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -19,14 +21,35 @@ public class EnvironmentProps {
 
     private static String activeProfile = System.getProperty("spring.profiles.active");
 
-    private static String baseDir = EnvironmentProps.class.getClassLoader().getResource("").getPath();
+    private static String appPropPath = "conf/" + activeProfile + "/application.properties";
 
-    private static String appPropPath = baseDir + "conf/" + activeProfile + "/application.properties";
+    private static String baseDir;
+
+    static {
+        String codePath = EnvironmentProps.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+        if (codePath.contains(".jar!")) {
+            baseDir = codePath.substring(0, codePath.indexOf("!"));
+            baseDir = baseDir.substring(0, baseDir.lastIndexOf("/"));
+            try {
+                baseDir = new File(new URI(baseDir)).getPath();
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+            System.out.println("EnvironmentProps baseDir=" + baseDir);
+        } else {
+            baseDir = codePath;
+        }
+    }
 
     public static String getActiveProfile() {
         return activeProfile;
     }
 
+    /**
+     * when run in jar redirect to the same directory of this jar,
+     * when run in unpacked directory,its the base code dir
+     * @return baseDir
+     */
     public static String getBaseDir() {
         return baseDir;
     }
@@ -38,7 +61,7 @@ public class EnvironmentProps {
     public static Properties getProperties(String path) {
         Properties properties = new Properties();
         try {
-            properties.load(new FileInputStream(path));
+            properties.load(EnvironmentProps.class.getClassLoader().getResourceAsStream(path));
         } catch (Exception e) {
             LOGGER.error("loadAllProperties e,", e);
             return properties;

@@ -34,10 +34,6 @@
         <groupId>org.apache.tomcat.embed</groupId>
         <artifactId>tomcat-embed-jasper</artifactId>
     </dependency>
-<!--     <dependency>
-        <groupId>org.apache.tomcat.embed</groupId>
-        <artifactId>tomcat-embed-logging-juli</artifactId>
-    </dependency> -->
     
 <!--     <dependency>
         <groupId>org.springframework.boot</groupId>
@@ -110,7 +106,7 @@
         
     </resources>
     <plugins>
-       <!--  <plugin>
+<!--     <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-dependency-plugin</artifactId>
             <executions>
@@ -127,7 +123,7 @@
                         <includeScope>compile</includeScope>
                     </configuration>
                 </execution>
-            </executions>
+            </executions> 
         </plugin> -->
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
@@ -157,7 +153,7 @@
                 </webResources> 
             </configuration>
         </plugin> -->
-       <!--  <plugin>
+<!--        <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-jar-plugin</artifactId>
             <configuration> 
@@ -167,11 +163,11 @@
                         <classpathPrefix>/scm.web/lib</classpathPrefix>
                         <mainClass>pers.zcc.scm.web.launch.AppBootstrap</mainClass>
                     </manifest>
+                    <compress>false</compress>
                 </archive>
-                
             </configuration>
         </plugin> -->
-        <!-- <plugin>
+       <plugin>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-maven-plugin</artifactId>
             <version>2.6.4</version>
@@ -188,8 +184,8 @@
                  </execution>
              </executions>
             
-        </plugin> -->
-        <plugin>
+        </plugin> 
+        <!--  <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-assembly-plugin</artifactId>
             <executions>
@@ -200,20 +196,39 @@
                         <goal>single</goal>
                     </goals>
                     <configuration>
-                        <!-- <archive>
+                        <archive>
                             <manifest>
-                                <mainClass>pers.zcc.scm.web.launch.AppBootstrap</mainClass>
+                                <mainClass>pers.zcc.scm.web.launch.JarLauncher</mainClass>
                                 <addClasspath>true</addClasspath>
                                 <classpathPrefix>lib/</classpathPrefix>
                             </manifest>
-                        </archive> -->
+                            <compress>false</compress>
+                        </archive>
                         <descriptors>
                             <descriptor>src/main/assembly/assembly.xml</descriptor>
                         </descriptors>
                     </configuration>
                </execution>
             </executions>
-        </plugin>
+        </plugin>   -->
+        <!-- <plugin>
+            <groupId>pers.zhangchangchun</groupId>
+            <artifactId>maven-repackjar-plugin</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <executions>
+               <execution>
+                    <id>1</id>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>repackjar</goal>
+                    </goals>
+                    <configuration>
+                        <jarFileSuffix>-assembly</jarFileSuffix>
+                        <libRelativePath>/lib</libRelativePath>
+                    </configuration>
+               </execution>
+            </executions>
+        </plugin>   -->
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-release-plugin</artifactId> 

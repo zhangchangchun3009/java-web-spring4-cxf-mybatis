@@ -1,5 +1,8 @@
 package pers.zcc.scm.web.launch;
 
+import java.util.Arrays;
+import java.util.Comparator;
+
 import org.springframework.boot.loader.archive.Archive;
 
 /**
@@ -12,7 +15,7 @@ import org.springframework.boot.loader.archive.Archive;
  */
 public class JarLauncher extends ExecutableArchiveLauncher {
 
-    static final String BOOT_INF_CLASSES = "pers/";
+    static final String[] BOOT_INF_CLASSES = new String[] { "org/", "pers/", };
 
     static final String BOOT_INF_LIB = "lib/";
 
@@ -26,7 +29,24 @@ public class JarLauncher extends ExecutableArchiveLauncher {
     @Override
     protected boolean isNestedArchive(Archive.Entry entry) {
         if (entry.isDirectory()) {
-            return entry.getName().equals(BOOT_INF_CLASSES);
+            return Arrays.binarySearch(BOOT_INF_CLASSES, entry.getName(), new Comparator<String>() {
+                @Override
+                public int compare(String o1, String o2) {
+                    int minLength = Math.min(o1.length(), o2.length());
+                    for (int i = 0; i < minLength; i++) {
+                        if (o1.charAt(i) - o2.charAt(i) != 0) {
+                            return o1.charAt(i) - o2.charAt(i);
+                        } else {
+                            if (i == minLength - 1) {
+                                return o1.length() - o2.length();
+                            } else {
+                                continue;
+                            }
+                        }
+                    }
+                    return 0;
+                }
+            }) > 0;
         }
         return entry.getName().startsWith(BOOT_INF_LIB);
     }

@@ -35,7 +35,6 @@ public class EnvironmentProps {
             } catch (URISyntaxException e) {
                 e.printStackTrace();
             }
-            System.out.println("EnvironmentProps baseDir=" + baseDir);
         } else {
             baseDir = codePath;
         }

@@ -35,12 +35,6 @@
         <artifactId>tomcat-embed-jasper</artifactId>
     </dependency>
     
-<!--     <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-loader</artifactId>
-        <version>2.1.3.RELEASE</version>
-    </dependency> -->
-    
   </dependencies>
   
   <profiles>
@@ -167,7 +161,7 @@
                 </archive>
             </configuration>
         </plugin> -->
-       <plugin>
+        <plugin>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-maven-plugin</artifactId>
             <version>2.6.4</version>
@@ -183,9 +177,8 @@
                     </configuration>
                  </execution>
              </executions>
-            
-        </plugin> 
-        <!--  <plugin>
+        </plugin>
+          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-assembly-plugin</artifactId>
             <executions>
@@ -199,8 +192,8 @@
                         <archive>
                             <manifest>
                                 <mainClass>pers.zcc.scm.web.launch.JarLauncher</mainClass>
-                                <addClasspath>true</addClasspath>
-                                <classpathPrefix>lib/</classpathPrefix>
+                                <!-- <addClasspath>true</addClasspath>
+                                <classpathPrefix>lib/</classpathPrefix> -->
                             </manifest>
                             <compress>false</compress>
                         </archive>
@@ -210,7 +203,7 @@
                     </configuration>
                </execution>
             </executions>
-        </plugin>   -->
+        </plugin>   
         <!-- <plugin>
             <groupId>pers.zhangchangchun</groupId>
             <artifactId>maven-repackjar-plugin</artifactId>

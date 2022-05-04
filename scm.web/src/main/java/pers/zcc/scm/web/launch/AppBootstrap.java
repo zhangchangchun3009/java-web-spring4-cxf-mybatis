@@ -11,7 +11,10 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Properties;
 
+import javax.servlet.ServletContext;
+
 import org.apache.catalina.Context;
+import org.apache.catalina.Globals;
 import org.apache.catalina.Host;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleState;
@@ -19,6 +22,7 @@ import org.apache.catalina.Server;
 import org.apache.catalina.Service;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.loader.WebappLoader;
+import org.apache.catalina.startup.Constants;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
@@ -95,8 +99,11 @@ public class AppBootstrap {
         LOGGER.info("tomcat start at contextPath:" + contextPath);
 
         tomcat.setBaseDir(baseDir);
-        Context context = tomcat.addWebapp(contextPath, baseDir);
         tomcat.enableNaming();
+
+        Context context = tomcat.addWebapp(contextPath, baseDir);
+
+        copyAndSetWebxmlWhenInJar(cl, baseDir, runInjar, context);
 
         Host host = tomcat.getHost();
         host.setAutoDeploy(false);
@@ -121,6 +128,17 @@ public class AppBootstrap {
         server.await();
 
         innerStop();
+    }
+
+    private static void copyAndSetWebxmlWhenInJar(ClassLoader cl, String baseDir, boolean runInjar, Context context) {
+        if (runInjar) {
+            ServletContext servletContext = context.getServletContext();
+            new File(baseDir, "WEB-INF").mkdir();
+            String appWebxmlPath = baseDir + Constants.ApplicationWebXml;
+            File appWebxmlTemp = new File(appWebxmlPath);
+            copyJarResourceToTempDir(cl, Constants.ApplicationWebXml, appWebxmlTemp);
+            servletContext.setAttribute(Globals.ALT_DD_ATTR, appWebxmlPath);
+        }
     }
 
     private static void setContextWebappClassLoader(ClassLoader cl, Context context) {
@@ -228,18 +246,21 @@ public class AppBootstrap {
         File cert = new File(certPath);
         if (!certDirF.exists() || !cert.exists()) {
             certDirF.mkdir();
-            try (BufferedInputStream bin = new BufferedInputStream(
-                    cl.getResourceAsStream("conf/" + EnvironmentProps.getActiveProfile() + "/cert/tomcat.jks"));
-                    BufferedOutputStream bout = new BufferedOutputStream(new FileOutputStream(cert))) {
-                byte[] buffer = new byte[bin.available()];
-                bin.read(buffer);
-                bout.write(buffer);
-                bout.flush();
-            } catch (FileNotFoundException e) {
-                LOGGER.error("copy cert failed:", e);
-            } catch (IOException e) {
-                LOGGER.error("copy cert failed:", e);
-            }
+            copyJarResourceToTempDir(cl, "conf/" + EnvironmentProps.getActiveProfile() + "/cert/tomcat.jks", cert);
+        }
+    }
+
+    private static void copyJarResourceToTempDir(ClassLoader cl, String resourceRelativePath, File toFile) {
+        try (BufferedInputStream bin = new BufferedInputStream(cl.getResourceAsStream(resourceRelativePath));
+                BufferedOutputStream bout = new BufferedOutputStream(new FileOutputStream(toFile))) {
+            byte[] buffer = new byte[bin.available()];
+            bin.read(buffer);
+            bout.write(buffer);
+            bout.flush();
+        } catch (FileNotFoundException e) {
+            LOGGER.error("copy file failed:", e);
+        } catch (IOException e) {
+            LOGGER.error("copy file failed:", e);
         }
     }
 
@@ -258,5 +279,4 @@ public class AppBootstrap {
         stopThread.setDaemon(true);
         stopThread.start();
     }
-
 }

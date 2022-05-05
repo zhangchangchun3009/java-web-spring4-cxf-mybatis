@@ -75,7 +75,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
                 // First, check if the class has already been loaded
                 Class<?> c = findLoadedClass(name);
                 if (c == null) {
-                    long t0 = System.nanoTime();
+//                    long t0 = System.nanoTime();
                     try {
                         ClassLoader parent = this.getParent();
                         if (parent != null) {
@@ -92,14 +92,14 @@ public class LaunchedURLClassLoader extends URLClassLoader {
                     if (c == null) {
                         // If still not found, then invoke findClass in order
                         // to find the class.
-                        long t1 = System.nanoTime();
+//                        long t1 = System.nanoTime();
                         System.out.println("LaunchedURLClassLoader load by self " + name);
                         c = findClass(name);
 
                         // this is the defining class loader; record the stats
-                        sun.misc.PerfCounter.getParentDelegationTime().addTime(t1 - t0);
-                        sun.misc.PerfCounter.getFindClassTime().addElapsedTimeFrom(t1);
-                        sun.misc.PerfCounter.getFindClasses().increment();
+//                        sun.misc.PerfCounter.getParentDelegationTime().addTime(t1 - t0);
+//                        sun.misc.PerfCounter.getFindClassTime().addElapsedTimeFrom(t1);
+//                        sun.misc.PerfCounter.getFindClasses().increment();
                     }
                 }
                 if (resolve) {

@@ -39,28 +39,28 @@
         <property name="dataSource" ref="shardingDataSource" />
     </bean>
     
-	  <tx:advice id="txAdvice" transaction-manager="txManager">  
-	  <!-- 配置这个事务建议的属性 -->  
-	  <tx:attributes>  
-	    <!-- 指定所有get开头的方法执行在只读事务上下文中 -->  
-	    <tx:method name="get*" read-only="true"/>
-	    <tx:method name="find*" read-only="true"/>
-	    <tx:method name="query*" read-only="true"/>
-	    <tx:method name="select*" read-only="true"/>   
-	    <!-- 其余方法执行在默认的读写上下文中 -->
-	    <tx:method name="update*" read-only="false" propagation="REQUIRED" />  
-	    <tx:method name="insert*" read-only="false" propagation="REQUIRED" />
-	    <tx:method name="create*" read-only="false" propagation="REQUIRED" />
-	    <tx:method name="delete*" read-only="false" propagation="REQUIRED" />
-	    <tx:method name="batch*" read-only="false" propagation="REQUIRED" />
-	    <tx:method name="*" read-only="false" propagation="REQUIRED" />  
-	  </tx:attributes>  
-	  </tx:advice>  
-	    
-	  <aop:config>  
-		  <aop:pointcut id="pointcut" expression="execution(* pers.zcc..service.impl.*.*(..))"/>  
-		  <aop:advisor advice-ref="txAdvice" pointcut-ref="pointcut"/>  
-	  </aop:config>  
+      <tx:advice id="txAdvice" transaction-manager="txManager">  
+      <!-- 配置这个事务建议的属性 -->  
+      <tx:attributes>  
+        <!-- 指定所有get开头的方法执行在只读事务上下文中 -->  
+        <tx:method name="get*" read-only="true"/>
+        <tx:method name="find*" read-only="true"/>
+        <tx:method name="query*" read-only="true"/>
+        <tx:method name="select*" read-only="true"/>   
+        <!-- 其余方法执行在默认的读写上下文中 -->
+        <tx:method name="update*" read-only="false" propagation="REQUIRED" />  
+        <tx:method name="insert*" read-only="false" propagation="REQUIRED" />
+        <tx:method name="create*" read-only="false" propagation="REQUIRED" />
+        <tx:method name="delete*" read-only="false" propagation="REQUIRED" />
+        <tx:method name="batch*" read-only="false" propagation="REQUIRED" />
+        <tx:method name="*" read-only="false" propagation="REQUIRED" />  
+      </tx:attributes>  
+      </tx:advice>  
+      
+      <aop:config>  
+          <aop:pointcut id="pointcut"  expression="within(pers.zcc..service.impl.*)&amp;&amp;execution(public * *(..))&amp;&amp;!@annotation(org.springframework.transaction.annotation.Transactional)&amp;&amp;!@within(org.springframework.transaction.annotation.Transactional)" />  
+          <aop:advisor advice-ref="txAdvice" pointcut-ref="pointcut"/>
+      </aop:config>   
 
     <!-- 注册事务管理驱动 -->
     <tx:annotation-driven transaction-manager="txManager" />
@@ -125,17 +125,17 @@
     
    
    
-	<!-- 配置SqlSessionFactoryBean -->
-	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-	    <!-- 引用数据源组件 -->
-	    <property name="dataSource" ref="shardingDataSource" />
-	    <!-- 引用MyBatis配置文件中的配置 -->
-	    <property name="mapperLocations" value="classpath*:pers/zcc/**/*Dao.xml " />
-	    <property name="configLocation" value="classpath:mybatis-config.xml" />
-			    <!-- pageHelper 分页插件 -->
-		<property name="plugins">
-			  <array>
-				   <bean class="com.github.pagehelper.PageInterceptor">
+    <!-- 配置SqlSessionFactoryBean -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!-- 引用数据源组件 -->
+        <property name="dataSource" ref="shardingDataSource" />
+        <!-- 引用MyBatis配置文件中的配置 -->
+        <property name="mapperLocations" value="classpath*:pers/zcc/**/*Dao.xml " />
+        <property name="configLocation" value="classpath:mybatis-config.xml" />
+                <!-- pageHelper 分页插件 -->
+        <property name="plugins">
+              <array>
+                   <bean class="com.github.pagehelper.PageInterceptor">
                         <property name="properties">
                              <value>
                               helperDialect=mysql
@@ -143,16 +143,26 @@
                              </value>
                         </property>
                    </bean>
-			  </array>
-		</property>
-	</bean>
+              </array>
+        </property>
+    </bean>
  
    <!-- Mapper代理开发，使用Spring自动扫描MyBatis的接口并装配 （Sprinh将指定包中的所有被@Mapper注解标注的接口自动装配为MyBatis的映射接口） -->
-	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-	    <!-- mybatis-spring组件的扫描器，*.dao只需要接口（接口方法与SQL映射文件中的相同） -->
-	    <property name="basePackage" value="pers.zcc.**.dao" />
-	    <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
-	</bean>
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!-- mybatis-spring组件的扫描器，*.dao只需要接口（接口方法与SQL映射文件中的相同） -->
+        <property name="basePackage" value="pers.zcc.**.dao" />
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+    </bean>
 
+    <bean name="springEventExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="corePoolSize" value="2"/>
+        <property name="maxPoolSize" value="16" />
+        <property name="queueCapacity" value="3000" />
+        <property name="keepAliveSeconds" value="60" />
+    </bean>
+    
+    <bean name="applicationEventMulticaster" class="org.springframework.context.event.SimpleApplicationEventMulticaster">
+        <property name="taskExecutor" ref="springEventExecutor" />
+    </bean>
     
 </beans>

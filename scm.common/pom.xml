@@ -8,6 +8,8 @@
   <packaging>jar</packaging>
   <artifactId>scm.common</artifactId>
   <name>scm.common</name>
+  <dependencies>
+  </dependencies>
   <build>
     <finalName>scm.common</finalName>
     <resources>

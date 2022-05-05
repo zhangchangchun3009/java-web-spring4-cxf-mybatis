@@ -19,14 +19,14 @@ public class UserCache {
      * 禁止调用
      * @param user
      */
-    static void setUser(UserVO user) {
+    public static void setUser(UserVO user) {
         userThreadLocal.set(user);
     }
 
     /**
      * 禁止调用
      */
-    static void removeUser() {
+    public static void removeUser() {
         userThreadLocal.remove();
     }
 

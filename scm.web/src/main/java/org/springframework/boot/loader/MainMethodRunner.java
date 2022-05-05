@@ -1,4 +1,4 @@
-package pers.zcc.scm.web.launch;
+package org.springframework.boot.loader;
 
 import java.lang.reflect.Method;
 
@@ -29,6 +29,9 @@ public class MainMethodRunner {
         Class<?> mainClass = Thread.currentThread().getContextClassLoader().loadClass(this.mainClassName);
         Method mainMethod = mainClass.getDeclaredMethod("main", String[].class);
         mainMethod.invoke(null, new Object[] { this.args });
+//        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+//        Class.forName("org.apache.catalina.LifecycleException", true, cl);
+//        Class.forName(mainClassName, true, cl);
     }
 
 }

@@ -6,7 +6,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.jar.Manifest;
 
-import pers.zcc.scm.web.launch.Launcher;
+import org.springframework.boot.loader.Launcher;
 
 /**
  * An archive that can be launched by the {@link Launcher}.

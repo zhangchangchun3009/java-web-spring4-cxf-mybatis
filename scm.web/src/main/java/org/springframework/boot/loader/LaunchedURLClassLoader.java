@@ -1,4 +1,4 @@
-package pers.zcc.scm.web.launch;
+package org.springframework.boot.loader;
 
 import java.io.IOException;
 import java.net.JarURLConnection;
@@ -56,6 +56,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 
     @Override
     protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+        System.out.println("LaunchedURLClassLoader loadClass " + name);
         Handler.setUseFastConnectionExceptions(true);
         try {
             try {
@@ -70,10 +71,51 @@ public class LaunchedURLClassLoader extends URLClassLoader {
                             "Package " + name + " has already been " + "defined but it could not be found");
                 }
             }
-            return super.loadClass(name, resolve);
+            synchronized (getClassLoadingLock(name)) {
+                // First, check if the class has already been loaded
+                Class<?> c = findLoadedClass(name);
+                if (c == null) {
+                    long t0 = System.nanoTime();
+                    try {
+                        ClassLoader parent = this.getParent();
+                        if (parent != null) {
+                            System.out.println("LaunchedURLClassLoader load  " + name + " by parent " + parent);
+                            c = parent.loadClass(name);
+                        } else {
+
+                        }
+                    } catch (ClassNotFoundException e) {
+                        // ClassNotFoundException thrown if class not found
+                        // from the non-null parent class loader
+                    }
+
+                    if (c == null) {
+                        // If still not found, then invoke findClass in order
+                        // to find the class.
+                        long t1 = System.nanoTime();
+                        System.out.println("LaunchedURLClassLoader load by self " + name);
+                        c = findClass(name);
+
+                        // this is the defining class loader; record the stats
+                        sun.misc.PerfCounter.getParentDelegationTime().addTime(t1 - t0);
+                        sun.misc.PerfCounter.getFindClassTime().addElapsedTimeFrom(t1);
+                        sun.misc.PerfCounter.getFindClasses().increment();
+                    }
+                }
+                if (resolve) {
+                    resolveClass(c);
+                }
+                return c;
+            }
         } finally {
             Handler.setUseFastConnectionExceptions(false);
         }
+    }
+
+    @Override
+    protected Class<?> findClass(String name) throws ClassNotFoundException {
+        System.out.println("LaunchedURLClassLoader try find class " + name);
+        return super.findClass(name);
     }
 
     /**

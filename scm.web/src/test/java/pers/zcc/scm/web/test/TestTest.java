@@ -120,6 +120,7 @@ class TestTest extends TestBase {
 
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     void test5() {
         String tradeNo = "O123_123";

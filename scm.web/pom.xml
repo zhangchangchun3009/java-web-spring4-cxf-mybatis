@@ -186,8 +186,9 @@
         </plugin>
         <!-- the generated jar file by assembly plugin could not be run directly, 
         use scm.web.jar packed by springboot plugin instead;
-        the generated zip file could be unzipped and deployed directly in an out web containner,
-        or be unzipped and run by scripts in the bin directory.
+        the generated zip file could be unzipped and deployed directly in a provided web containner,
+        or be unzipped and run by scripts in the bin directory, in this way ,application will be
+        run in an embedded tomcat
         -->
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
@@ -215,7 +216,9 @@
                </execution>
             </executions>
         </plugin> 
-        <!-- work with maven assembly plugin. a experimental plugin need to be improved-->  
+        <!-- this plugin must work after maven assembly plugin.
+        it's an experimental plugin and need to be improved.
+        it's useless now -->  
         <plugin>
             <groupId>pers.zhangchangchun</groupId>
             <artifactId>maven-repackjar-plugin</artifactId>

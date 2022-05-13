@@ -15,10 +15,10 @@ import pers.zcc.scm.common.util.stream.api.IPlugin;
 public class IgnoreDuplicates implements IPlugin {
     private IEventConsumer nextConsumer;
 
-    Cache<Integer, String> intToStringCache = EhCacheUtil.getManager().createCache("IntToStringCache",
+    Cache<Integer, String> handledEventCache = EhCacheUtil.getManager().createCache("IntToStringCache",
             CacheConfigurationBuilder
-                    .newCacheConfigurationBuilder(Integer.class, String.class, ResourcePoolsBuilder.heap(100))
-                    .withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofMillis(10000))));
+                    .newCacheConfigurationBuilder(Integer.class, String.class, ResourcePoolsBuilder.heap(10000)) // adapt to rate of flow
+                    .withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofMillis(5000)))); // adapt to rate of flow
 
     @Override
     public void setNext(IEventConsumer nextConsumer) {
@@ -28,8 +28,11 @@ public class IgnoreDuplicates implements IPlugin {
     @Override
     public Event consume(Event event) {
         int id = event.getEventId();
-        if (intToStringCache.putIfAbsent(id, "") == null) {
+        if (handledEventCache.putIfAbsent(id, "") == null) {
             nextConsumer.consume(event);
+            handledEventCache.put(id, "");
+        } else {
+            throw new RuntimeException("duplicate event");
         }
         return event;
     }

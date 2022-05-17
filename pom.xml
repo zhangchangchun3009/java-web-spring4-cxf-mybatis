@@ -15,6 +15,7 @@
       <spring.version>5.2.12.RELEASE</spring.version>
       <tomcat.version>8.5.63</tomcat.version>
       <junit.version>5.8.2</junit.version>
+      <log4j.version>2.17.1</log4j.version>
   </properties>
   
   <modules>
@@ -176,19 +177,19 @@
     <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-slf4j-impl</artifactId>
-        <version>2.17.0</version>
+        <version>${log4j.version}</version>
     </dependency>
       
     <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-api</artifactId>
-        <version>2.17.0</version>
+        <version>${log4j.version}</version>
     </dependency>
     
     <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-core</artifactId>
-        <version>2.17.0</version>
+        <version>${log4j.version}</version>
     </dependency>
     
     <dependency>
@@ -200,7 +201,7 @@
     <dependency>
         <groupId>org.mybatis</groupId>
         <artifactId>mybatis</artifactId>
-        <version>3.5.1</version>
+        <version>3.5.6</version>
     </dependency>
     
 
@@ -346,7 +347,7 @@
     <dependency>
       <groupId>org.java-websocket</groupId>
       <artifactId>Java-WebSocket</artifactId>
-      <version>1.4.0</version>
+      <version>1.5.0</version>
     </dependency>
     
     <dependency>

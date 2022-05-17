@@ -136,7 +136,7 @@ public class Response<T> implements Serializable {
     @Override
     public String toString() {
         try {
-            return JacksonUtil.getObjectMapper().writeValueAsString(this);
+            return JacksonUtil.getDefaultObjectMapper().writeValueAsString(this);
         } catch (JsonProcessingException e) {
             return "";
         }

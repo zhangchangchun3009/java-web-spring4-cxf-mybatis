@@ -12,7 +12,7 @@ import pers.zcc.scm.web.tcp.server.interfaces.ITcpServerReceiver;
 
 @Named
 public class TcpServerReceiver implements ITcpServerReceiver {
-    ObjectMapper mapper = JacksonUtil.getObjectMapper();
+    ObjectMapper mapper = JacksonUtil.getDefaultObjectMapper();
 
     @Inject
     WriteCommandService writeService;

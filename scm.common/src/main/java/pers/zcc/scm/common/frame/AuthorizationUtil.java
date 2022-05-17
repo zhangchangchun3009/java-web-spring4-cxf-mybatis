@@ -39,7 +39,7 @@ public class AuthorizationUtil {
         String nonce = RandomUtil.getRandomAscIICode(32);
         String content = "";
         try {
-            content = JacksonUtil.getObjectMapper().writeValueAsString(param);
+            content = JacksonUtil.getDefaultObjectMapper().writeValueAsString(param);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
@@ -64,7 +64,7 @@ public class AuthorizationUtil {
                 return null;
             }
             String userInfo = decryptedStrArr[2];
-            UserVO user = JacksonUtil.getObjectMapper().readValue(userInfo, UserVO.class);
+            UserVO user = JacksonUtil.getDefaultObjectMapper().readValue(userInfo, UserVO.class);
             String createdTime = decryptedStrArr[0];
             String nonce = decryptedStrArr[1];
             AuthorizationVO authVO = new AuthorizationVO();

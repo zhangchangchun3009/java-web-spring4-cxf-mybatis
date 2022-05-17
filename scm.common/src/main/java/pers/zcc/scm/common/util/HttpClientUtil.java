@@ -166,7 +166,7 @@ public class HttpClientUtil {
                     parameterMap.put(entry.getName(), entry.getValue());
                     signParameters.add(entry.getValue());
                 }
-                String jsonString = JacksonUtil.getObjectMapper().writerWithDefaultPrettyPrinter()
+                String jsonString = JacksonUtil.getDefaultObjectMapper().writerWithDefaultPrettyPrinter()
                         .writeValueAsString(parameterMap);
                 StringEntity strEntity = new StringEntity(jsonString, CHARSET_UTF_8);
                 strEntity.setContentType(MIME_APPLICATION_JSON);

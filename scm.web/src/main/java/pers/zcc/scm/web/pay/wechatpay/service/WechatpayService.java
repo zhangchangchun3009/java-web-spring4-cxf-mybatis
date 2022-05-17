@@ -45,7 +45,7 @@ public class WechatpayService implements IWechatpayService {
         HttpPost httpPost = new HttpPost(config.h5pay_url);
         httpPost.addHeader("Accept", "application/json");
         httpPost.addHeader("Content-type", "application/json; charset=utf-8");
-        ObjectMapper objectMapper = JacksonUtil.getObjectMapper();
+        ObjectMapper objectMapper = JacksonUtil.getDefaultObjectMapper();
         ObjectNode objectNode = objectMapper.createObjectNode();
         int time_expire = config.time_expire;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
@@ -113,7 +113,7 @@ public class WechatpayService implements IWechatpayService {
             }
             if (!StringUtils.isEmpty(jsonResult)) {
                 LOGGER.debug("jsonResult:" + jsonResult);
-                ObjectMapper objectMapper = JacksonUtil.getObjectMapper();
+                ObjectMapper objectMapper = JacksonUtil.getDefaultObjectMapper();
                 JsonNode root = objectMapper.readTree(jsonResult);
                 JsonNode trade_state_node = root.findValue("trade_state");
                 if (trade_state_node != null) {
@@ -150,7 +150,7 @@ public class WechatpayService implements IWechatpayService {
         HttpPost httpPost = new HttpPost(config.jsapipay_url);
         httpPost.addHeader("Accept", "application/json");
         httpPost.addHeader("Content-type", "application/json; charset=utf-8");
-        ObjectMapper objectMapper = JacksonUtil.getObjectMapper();
+        ObjectMapper objectMapper = JacksonUtil.getDefaultObjectMapper();
         ObjectNode objectNode = objectMapper.createObjectNode();
         int time_expire = config.time_expire;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
@@ -230,7 +230,7 @@ public class WechatpayService implements IWechatpayService {
             }
             if (!StringUtils.isEmpty(jsonResult)) {
                 LOGGER.debug("jsonResult:" + jsonResult);
-                ObjectMapper objectMapper = JacksonUtil.getObjectMapper();
+                ObjectMapper objectMapper = JacksonUtil.getDefaultObjectMapper();
                 JsonNode root = objectMapper.readTree(jsonResult);
                 JsonNode openid = root.findValue("openid");
                 if (openid != null) {

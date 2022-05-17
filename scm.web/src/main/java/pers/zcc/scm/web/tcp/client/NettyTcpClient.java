@@ -60,7 +60,7 @@ public class NettyTcpClient {
 
     private boolean exit = false;
 
-    private static ObjectMapper mapper = JacksonUtil.getObjectMapper();
+    private static ObjectMapper mapper = JacksonUtil.getDefaultObjectMapper();
 
     private EventLoopGroup eventLoopGroup;
 

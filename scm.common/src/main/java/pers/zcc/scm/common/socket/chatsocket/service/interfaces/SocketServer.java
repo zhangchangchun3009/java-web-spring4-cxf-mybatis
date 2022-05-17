@@ -73,7 +73,7 @@ public class SocketServer {
             try {
                 final Socket socket = serverSocket.accept();
                 String requestMsg = getMessage(socket);
-                JsonNode root = JacksonUtil.getObjectMapper().readTree(requestMsg);
+                JsonNode root = JacksonUtil.getDefaultObjectMapper().readTree(requestMsg);
                 JsonNode codeN = root.get("code");
                 JsonNode dataN = root.get("data");
                 if (codeN != null && dataN != null) {
@@ -81,14 +81,14 @@ public class SocketServer {
                     if (SocketCodeEnum.LISTEN_START_CODE.getCode().equals(code)) {
                         int handle = handleCnt.addAndGet(1);
                         if (handle > backlog) {
-                            String responseMsg = JacksonUtil.getObjectMapper()
+                            String responseMsg = JacksonUtil.getDefaultObjectMapper()
                                     .writeValueAsString(new Response<String>().fail("999", "已到达连接上限"));
                             writeMessage(socket, responseMsg);
                             continue;
                         }
                         JsonNode nameN = dataN.get("userName");
                         if (nameN == null) {
-                            String responseMsg = JacksonUtil.getObjectMapper()
+                            String responseMsg = JacksonUtil.getDefaultObjectMapper()
                                     .writeValueAsString(new Response<String>().fail("998", "注册用户名为空"));
                             writeMessage(socket, responseMsg);
                             continue;
@@ -100,7 +100,7 @@ public class SocketServer {
                         userRegister.put(user.getUserName(), user);
                         connections.put(handle, socket);
                         System.out.println("新增连接成功，用户名：" + user.getUserName() + ",分配临时id：" + handle);
-                        String responseMsg = JacksonUtil.getObjectMapper().writeValueAsString(
+                        String responseMsg = JacksonUtil.getDefaultObjectMapper().writeValueAsString(
                                 new Response<UserVO>().fail(SocketCodeEnum.LISTEN_START_CODE.getCode(), "连接成功", user));
                         writeMessage(socket, responseMsg);
                         listen(callBack, socket, handle);
@@ -143,7 +143,7 @@ public class SocketServer {
                     continue;
                 }
                 try {
-                    JsonNode root = JacksonUtil.getObjectMapper().readTree(msg);
+                    JsonNode root = JacksonUtil.getDefaultObjectMapper().readTree(msg);
                     String code = root.get("code").asText();
                     String data = root.get("data").asText();
                     if (code == null) {

@@ -11,7 +11,7 @@ import java.util.Random;
  */
 public class RandomUtil {
 
-    private static final int numbers[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    private static final char numbers[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
     /**
      * Gets the random num format code.
@@ -20,13 +20,13 @@ public class RandomUtil {
      * @return the random num format code
      */
     public static String getRandomNumFormatCode(int number) {
-        String codeNum = "";
+        char[] res = new char[number];
         Random random = new Random();
         for (int i = 0; i < number; i++) {
             int next = random.nextInt(10000);
-            codeNum += numbers[next % 10];
+            res[i] = numbers[next % 10];
         }
-        return codeNum;
+        return new String(res);
     }
 
     /**
@@ -36,7 +36,7 @@ public class RandomUtil {
      * @return the random asc II code
      */
     public static String getRandomAscIICode(int number) {
-        String codeNum = "";
+        char[] res = new char[number];
         int[] code = new int[3];
         Random random = new Random();
         for (int i = 0; i < number; i++) {
@@ -46,9 +46,9 @@ public class RandomUtil {
             code[0] = num;
             code[1] = uppercase;
             code[2] = lowercase;
-            codeNum += (char) code[random.nextInt(3)];
+            res[i] = (char) code[random.nextInt(3)];
         }
-        return codeNum;
+        return new String(res);
     }
 
 }

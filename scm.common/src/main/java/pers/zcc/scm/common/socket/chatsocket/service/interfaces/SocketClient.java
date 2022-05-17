@@ -41,7 +41,7 @@ public class SocketClient {
         try {
             UserVO register = new UserVO();
             register.setUserName(userName);
-            requestMsg = JacksonUtil.getObjectMapper().writeValueAsString(
+            requestMsg = JacksonUtil.getDefaultObjectMapper().writeValueAsString(
                     new Response<UserVO>().fail(SocketCodeEnum.LISTEN_START_CODE.getCode(), "请求连接监听", register));
             new DataOutputStream(socket.getOutputStream()).writeUTF(requestMsg);
             listen(callBack);
@@ -63,11 +63,11 @@ public class SocketClient {
                     continue;
                 }
                 try {
-                    JsonNode root = JacksonUtil.getObjectMapper().readTree(msg);
+                    JsonNode root = JacksonUtil.getDefaultObjectMapper().readTree(msg);
                     String code = root.get("code").asText();
                     String data = root.get("data").toString();
                     if (SocketCodeEnum.LISTEN_START_CODE.getCode().equals(code)) {
-                        user = JacksonUtil.getObjectMapper().readValue(data, UserVO.class);
+                        user = JacksonUtil.getDefaultObjectMapper().readValue(data, UserVO.class);
                         handle = user.getId();
                     }
                     if (SocketCodeEnum.LISTEN_STOP_CODE.getCode().equals(code)) {
@@ -85,7 +85,7 @@ public class SocketClient {
 
     public static void send(String msg) {
         try {
-            String requestMsg = JacksonUtil.getObjectMapper().writeValueAsString(
+            String requestMsg = JacksonUtil.getDefaultObjectMapper().writeValueAsString(
                     new Response<String>().fail(SocketCodeEnum.CONMUNICATION_CODE.getCode(), "发送通信消息", msg));
             new DataOutputStream(socket.getOutputStream()).writeUTF(requestMsg);
         } catch (IOException e) {
@@ -95,7 +95,7 @@ public class SocketClient {
 
     public static void close() {
         try {
-            String requestMsg = JacksonUtil.getObjectMapper().writeValueAsString(new Response<String>()
+            String requestMsg = JacksonUtil.getDefaultObjectMapper().writeValueAsString(new Response<String>()
                     .fail(SocketCodeEnum.LISTEN_STOP_CODE.getCode(), "请求停止监听", String.valueOf(handle)));
             new DataOutputStream(socket.getOutputStream()).writeUTF(requestMsg);
             socket.close();

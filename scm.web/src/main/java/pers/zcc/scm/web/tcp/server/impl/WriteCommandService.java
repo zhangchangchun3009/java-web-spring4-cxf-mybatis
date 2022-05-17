@@ -20,7 +20,7 @@ import pers.zcc.scm.common.util.RSAUtil;
 
 @Named
 public class WriteCommandService {
-    ObjectMapper mapper = JacksonUtil.getObjectMapper();
+    ObjectMapper mapper = JacksonUtil.getDefaultObjectMapper();
 
     private Charset charset = Charset.forName("UTF-8");
 

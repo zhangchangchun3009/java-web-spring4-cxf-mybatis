@@ -23,7 +23,7 @@ public class TcpClientReceiver implements ITcpClientReceiver {
     @Inject
     private NettyTcpClient nettyTcpClient;
 
-    private ObjectMapper mapper = JacksonUtil.getObjectMapper();
+    private ObjectMapper mapper = JacksonUtil.getDefaultObjectMapper();
 
     @Override
     public void read(int command, String messageId, String json) {

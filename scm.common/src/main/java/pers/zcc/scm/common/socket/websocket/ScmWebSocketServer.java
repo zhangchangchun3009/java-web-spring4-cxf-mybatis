@@ -34,7 +34,7 @@ public class ScmWebSocketServer extends WebSocketServer {
     private static WebsocketServiceResolver resolver = ApplicationContextManager
             .getBean(WebsocketServiceResolver.class);
 
-    private static ObjectMapper mapper = JacksonUtil.getObjectMapper();
+    private static ObjectMapper mapper = JacksonUtil.getDefaultObjectMapper();
 
     public ScmWebSocketServer(int port) {
         super(new InetSocketAddress(port));

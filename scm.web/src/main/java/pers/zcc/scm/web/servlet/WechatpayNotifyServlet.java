@@ -64,7 +64,7 @@ public class WechatpayNotifyServlet extends HttpServlet {
             responseStr(resp);
             return;
         }
-        WechatNotifyMessage message = JacksonUtil.getObjectMapper().readValue(body, WechatNotifyMessage.class);
+        WechatNotifyMessage message = JacksonUtil.getDefaultObjectMapper().readValue(body, WechatNotifyMessage.class);
         if ("TRANSACTION.SUCCESS".equals(message.getEvent_type())) {
             try {
                 Resource resource = message.getResource();
@@ -76,7 +76,7 @@ public class WechatpayNotifyServlet extends HttpServlet {
                         associated_data == null ? new byte[0] : associated_data.getBytes("UTF-8"),
                         nonce.getBytes("UTF-8"), ciphertext);
                 if (!StringUtils.isEmpty(payInfo)) {
-                    WechatNotifyResource decryptedResource = JacksonUtil.getObjectMapper().readValue(payInfo,
+                    WechatNotifyResource decryptedResource = JacksonUtil.getDefaultObjectMapper().readValue(payInfo,
                             WechatNotifyResource.class);
                     String tradeNo = decryptedResource.getOut_trade_no();
                     OrderVO orderParam = new OrderVO();
@@ -113,7 +113,7 @@ public class WechatpayNotifyServlet extends HttpServlet {
             WechatNotifyResponse response = new WechatNotifyResponse();
             response.setCode("SUCCESS");
             response.setMessage("成功");
-            resp.getOutputStream().write(JacksonUtil.getObjectMapper().writeValueAsString(response).getBytes("UTF-8"));
+            resp.getOutputStream().write(JacksonUtil.getDefaultObjectMapper().writeValueAsString(response).getBytes("UTF-8"));
         } catch (Exception e) {
             LOGGER.error("WechatpayNotify e,", e);
         }

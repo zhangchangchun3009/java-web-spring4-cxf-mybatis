@@ -29,7 +29,7 @@ public class BusinessHandler extends ChannelInboundHandlerAdapter {
 
     private static Charset charset = Charset.forName("UTF-8");
 
-    ObjectMapper mapper = JacksonUtil.getObjectMapper();
+    ObjectMapper mapper = JacksonUtil.getDefaultObjectMapper();
 
     @Inject
     MessageCacheService cacheService;

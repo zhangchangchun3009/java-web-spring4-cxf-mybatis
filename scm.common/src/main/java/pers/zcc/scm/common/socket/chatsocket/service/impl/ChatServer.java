@@ -34,7 +34,7 @@ public class ChatServer extends SocketServer {
             @Override
             public void onAccept(Socket fromSocket, String message) {
                 try {
-                    ObjectMapper mapper = JacksonUtil.getObjectMapper();
+                    ObjectMapper mapper = JacksonUtil.getDefaultObjectMapper();
                     ChatMessage chtMessageVo = mapper.readValue(message, ChatMessage.class);
                     String to = chtMessageVo.getTo();
                     String now = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());

@@ -29,7 +29,7 @@ public class Serializer {
 
     private static final String STORE_FILE_NAME = ".modbus.db";
 
-    private static ObjectMapper mapper = JacksonUtil.getObjectMapper();
+    private static ObjectMapper mapper = JacksonUtil.getDefaultObjectMapper();
 
     private static String defaultFilePath;
 

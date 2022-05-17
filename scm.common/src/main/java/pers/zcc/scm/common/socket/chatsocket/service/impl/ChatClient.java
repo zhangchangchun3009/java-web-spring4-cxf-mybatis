@@ -40,7 +40,7 @@ public class ChatClient extends SocketClient {
         notifier = new CmdObserverNotifier();
         ChatCmdObserver observer = new ChatCmdObserver();
         notifier.addObserver(observer);
-        mapper = JacksonUtil.getObjectMapper();
+        mapper = JacksonUtil.getDefaultObjectMapper();
     }
 
     public static void main(String[] args) {

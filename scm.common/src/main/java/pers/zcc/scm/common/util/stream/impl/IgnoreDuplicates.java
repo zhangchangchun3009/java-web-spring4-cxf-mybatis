@@ -30,9 +30,6 @@ public class IgnoreDuplicates implements IPlugin {
         int id = event.getEventId();
         if (handledEventCache.putIfAbsent(id, "") == null) {
             nextConsumer.consume(event);
-            handledEventCache.put(id, "");
-        } else {
-            throw new RuntimeException("duplicate event");
         }
         return event;
     }

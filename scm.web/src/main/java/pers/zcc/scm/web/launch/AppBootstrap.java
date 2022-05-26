@@ -73,9 +73,13 @@ public class AppBootstrap {
     }
 
     public static void start() {
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        Properties props = getAppProp(cl);
+        // ============== migrate database ==================
+        DBMigration.migrateDbByFlyway();
+        // ======== config tomcat ===================
         tomcat = new Tomcat();
 
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
         URL bootURL = AppBootstrap.class.getProtectionDomain().getCodeSource().getLocation();
         String baseDir = bootURL.getPath();
         boolean runInjar = baseDir.contains(".jar");
@@ -88,8 +92,6 @@ public class AppBootstrap {
         }
 
         String jksPassword = getCertPassword(cl);
-
-        Properties props = getAppProp(cl);
 
         int port = EnvironmentProps.getInteger(props, "server.port", 8080);
         String contextPath = EnvironmentProps.getString(props, "server.contextPath", "/scm.web");

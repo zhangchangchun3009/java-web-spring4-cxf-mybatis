@@ -402,6 +402,12 @@
         <artifactId>disruptor</artifactId>
         <version>3.4.4</version>
     </dependency>
+    
+    <dependency>
+        <groupId>org.flywaydb</groupId>
+        <artifactId>flyway-mysql</artifactId>
+        <version>8.5.11</version>
+    </dependency>
 
     
     </dependencies>
@@ -672,7 +678,10 @@
         <artifactId>disruptor</artifactId>
     </dependency>
 
-     
+    <dependency>
+        <groupId>org.flywaydb</groupId>
+        <artifactId>flyway-mysql</artifactId>
+    </dependency>
   </dependencies>
   
   <repositories>

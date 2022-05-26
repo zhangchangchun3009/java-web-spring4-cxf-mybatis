@@ -19,7 +19,7 @@ public class DBMigration {
 
     public static void migrateDbByFlyway() {
         try {
-            System.setProperty("spring.profiles.active", "dev");
+//            System.setProperty("spring.profiles.active", "dev");
             String url = EnvironmentProps.getAppPropAsString("scm.datasource.jdbc.ds1.write.url", "");
             String user = EnvironmentProps.getAppPropAsString("scm.datasource.jdbc.ds1.write.username", "");
             String password = EnvironmentProps.getAppPropAsString("scm.datasource.jdbc.ds1.write.password", "");

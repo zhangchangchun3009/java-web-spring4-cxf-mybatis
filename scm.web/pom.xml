@@ -87,6 +87,7 @@
             </includes>
             <excludes>
                 <exclude>conf/**</exclude>
+                <exclude>db/**</exclude>
             </excludes>
         </resource>
         

@@ -53,7 +53,7 @@ public class ModbusSlaveTcpServer {
     }
 
     public ModbusSlaveTcpServer() {
-        this("127.0.0.1", 502, (short) 1);
+        this("0.0.0.0", 502, (short) 1);
         unitList.add(createUnitInstance(1, 256));
     }
 

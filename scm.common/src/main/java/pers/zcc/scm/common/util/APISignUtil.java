@@ -124,9 +124,9 @@ public class APISignUtil {
     }
 
     public static String getAppPublicKey(String appId) {
-        if (EnvironmentProps.getApplicationProp("application.appId").equalsIgnoreCase(appId)) {
-            return EnvironmentProps.getApplicationProp("application.appPublicKey");
+        if (PropertyUtil.getApplicationProp("application.appId").equalsIgnoreCase(appId)) {
+            return PropertyUtil.getApplicationProp("application.appPublicKey");
         }
-        return EnvironmentProps.getApplicationProp(appId + ".appPublicKey");
+        return PropertyUtil.getApplicationProp(appId + ".appPublicKey");
     }
 }

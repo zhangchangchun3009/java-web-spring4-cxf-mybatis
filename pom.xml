@@ -2,11 +2,10 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>pers.zhangchangchun</groupId>
   <artifactId>scm</artifactId>
-  <version>${project.version}</version>
+  <version>1.0.0</version>
   <packaging>pom</packaging>
   
    <properties>
-      <project.version>1.0.0</project.version>
       <jackson.version>2.10.5</jackson.version>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
       <maven.compiler.source>1.8</maven.compiler.source>
@@ -18,10 +17,10 @@
       <log4j.version>2.17.1</log4j.version>
   </properties>
   
-  <modules>
+<!--   <modules>
     <module>scm.web</module>
     <module>scm.common</module>
-  </modules>
+  </modules> -->
     
     
   <dependencyManagement>
@@ -700,13 +699,26 @@
   </dependencies>
   
   <repositories>
-        <repository>
+        <repository>    
             <id>public</id>
             <name>aliyun nexus</name>
             <url>https://maven.aliyun.com/nexus/content/groups/public/</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>central</id>
+            <url>https://maven.aliyun.com/nexus/content/repositories/central</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
     </repositories>
 

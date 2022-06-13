@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Properties;
 
 import javax.servlet.ServletContext;
 
@@ -29,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatEmbeddedWebappClassLoader;
 
-import pers.zcc.scm.common.util.EnvironmentProps;
+import pers.zcc.scm.common.util.AppEnviromentUtil;
 
 /**
  * 嵌入式tomcat启动类
@@ -74,7 +73,7 @@ public class AppBootstrap {
 
     public static void start() {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        Properties props = getAppProp(cl);
+//        Properties props = getAppProp(cl);
         // ============== migrate database ==================
         DBMigration.migrateDbByFlyway();
         // ======== config tomcat ===================
@@ -93,8 +92,8 @@ public class AppBootstrap {
 
         String jksPassword = getCertPassword(cl);
 
-        int port = EnvironmentProps.getInteger(props, "server.port", 8080);
-        String contextPath = EnvironmentProps.getString(props, "server.contextPath", "/scm.web");
+        int port = AppEnviromentUtil.getInteger("server.port", 8080);
+        String contextPath = AppEnviromentUtil.getString("server.contextPath", "/scm.web");
 
         LOGGER.info("tomcat start at port:" + port);
         LOGGER.info("tomcat start at baseDir:" + baseDir);
@@ -113,12 +112,12 @@ public class AppBootstrap {
         setContextWebappClassLoader(cl, context);
 
         Server server = tomcat.getServer();
-        setServer(server, props);
+        setServer(server);
 
         Service service = tomcat.getService();
-        Connector httpConnector = configHttpConnector(props);
+        Connector httpConnector = configHttpConnector();
         service.addConnector(httpConnector);
-        Connector sslConnector = configSSLConnector(baseDir, runInjar, jksPassword, props);
+        Connector sslConnector = configSSLConnector(baseDir, runInjar, jksPassword);
         service.addConnector(sslConnector);
 
         try {
@@ -151,26 +150,18 @@ public class AppBootstrap {
         context.setParentClassLoader(cl);
     }
 
-    private static void setServer(Server server, Properties props) {
-        int shutdownPort = EnvironmentProps.getInteger(props, "server.shutdownPort", 8005);
-        String shutdownCmd = EnvironmentProps.getString(props, "server.shutdownCmd", "SHUTDOWN");
+    private static void setServer(Server server) {
+        int shutdownPort = AppEnviromentUtil.getInteger("server.shutdownPort", 8005);
+        String shutdownCmd = AppEnviromentUtil.getString("server.shutdownCmd", "SHUTDOWN");
         server.setPort(shutdownPort);
         server.setShutdown(shutdownCmd);
     }
 
-    private static Properties getAppProp(ClassLoader cl) {
-        BufferedInputStream propBin = new BufferedInputStream(
-                cl.getResourceAsStream("conf/" + EnvironmentProps.getActiveProfile() + "/application.properties"));
-        Properties props = EnvironmentProps.getProperties(propBin);
-        return props;
-    }
-
-    private static Connector configSSLConnector(String baseDir, boolean runInjar, String jksPassword,
-            Properties props) {
+    private static Connector configSSLConnector(String baseDir, boolean runInjar, String jksPassword) {
         Connector sslConnector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
-        int sslPort = EnvironmentProps.getInteger(props, "server.sslPort", 8443);
-        String maxThread = EnvironmentProps.getString(props, "server.maxThread", "200");
-        long requestTimeoutMs = EnvironmentProps.getLong(props, "server.requestTimeoutMs", 120000L);
+        int sslPort = AppEnviromentUtil.getInteger("server.sslPort", 8443);
+        String maxThread = AppEnviromentUtil.getString("server.maxThread", "200");
+        long requestTimeoutMs = AppEnviromentUtil.getLong("server.requestTimeoutMs", 120000L);
         sslConnector.setPort(sslPort);
         sslConnector.setAsyncTimeout(requestTimeoutMs);
         sslConnector.setScheme("https");
@@ -181,17 +172,17 @@ public class AppBootstrap {
         sslConnector.setProperty("sslProtocol", "TLS");
         //when run in jar, gg, dir must be in file system, still i can't get one fat jar to run
         sslConnector.setProperty("keystoreFile", runInjar ? baseDir + "/cert/tomcat.jks"
-                : "./conf/" + EnvironmentProps.getActiveProfile() + "/cert/tomcat.jks");
+                : "./conf/" + AppEnviromentUtil.getActiveProfile() + "/cert/tomcat.jks");
         sslConnector.setProperty("keystorePass", jksPassword);
         return sslConnector;
     }
 
-    private static Connector configHttpConnector(Properties props) {
+    private static Connector configHttpConnector() {
         Connector httpConnector = new Connector("HTTP/1.1");
-        int port = EnvironmentProps.getInteger(props, "server.port", 8080);
-        int sslPort = EnvironmentProps.getInteger(props, "server.sslPort", 8443);
-        String maxThread = EnvironmentProps.getString(props, "server.maxThread", "200");
-        long requestTimeoutMs = EnvironmentProps.getLong(props, "server.requestTimeoutMs", 120000L);
+        int port = AppEnviromentUtil.getInteger("server.port", 8080);
+        int sslPort = AppEnviromentUtil.getInteger("server.sslPort", 8443);
+        String maxThread = AppEnviromentUtil.getString("server.maxThread", "200");
+        long requestTimeoutMs = AppEnviromentUtil.getLong("server.requestTimeoutMs", 120000L);
         httpConnector.setPort(port);
         httpConnector.setRedirectPort(sslPort);
         httpConnector.setAsyncTimeout(requestTimeoutMs);
@@ -204,7 +195,7 @@ public class AppBootstrap {
         String jksPassword = "";
         //change the input stream to fit the way of get resource in a jar
         try (BufferedInputStream bin = new BufferedInputStream(
-                cl.getResourceAsStream("conf/" + EnvironmentProps.getActiveProfile() + "/cert/jks-password.txt"));) {
+                cl.getResourceAsStream("conf/" + AppEnviromentUtil.getActiveProfile() + "/cert/jks-password.txt"));) {
             byte[] buffer = new byte[bin.available()];
             bin.read(buffer);
             jksPassword = new String(buffer, "UTF-8");
@@ -248,7 +239,7 @@ public class AppBootstrap {
         File cert = new File(certPath);
         if (!certDirF.exists() || !cert.exists()) {
             certDirF.mkdir();
-            copyJarResourceToTempDir(cl, "conf/" + EnvironmentProps.getActiveProfile() + "/cert/tomcat.jks", cert);
+            copyJarResourceToTempDir(cl, "conf/" + AppEnviromentUtil.getActiveProfile() + "/cert/tomcat.jks", cert);
         }
     }
 

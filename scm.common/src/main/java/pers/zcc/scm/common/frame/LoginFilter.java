@@ -23,7 +23,7 @@ import pers.zcc.scm.common.constant.UserTypeEnum;
 import pers.zcc.scm.common.dao.IUserDao;
 import pers.zcc.scm.common.user.vo.UserVO;
 import pers.zcc.scm.common.util.ApplicationContextManager;
-import pers.zcc.scm.common.util.EnvironmentProps;
+import pers.zcc.scm.common.util.PropertyUtil;
 import pers.zcc.scm.common.vo.AuthorizationVO;
 
 /**
@@ -48,7 +48,7 @@ public class LoginFilter implements Filter {
             urlWhiteList = Arrays.asList(urlWhitelistStr.split(";"));
         }
         userDao = ApplicationContextManager.getBean(IUserDao.class);
-        sessionValidateTime = Long.parseLong(EnvironmentProps.getApplicationProp("application.session.validatetime"));
+        sessionValidateTime = Long.parseLong(PropertyUtil.getApplicationProp("application.session.validatetime"));
     }
 
     @Override

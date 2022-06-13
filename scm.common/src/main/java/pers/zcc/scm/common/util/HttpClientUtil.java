@@ -80,10 +80,10 @@ public class HttpClientUtil {
         httpClient = HttpClients.custom().setConnectionManager(connectionManager)
                 .setKeepAliveStrategy(keepAliveStrategy).build();
 
-        domain = EnvironmentProps.getApplicationProp("application.domain");
-        token = EnvironmentProps.getApplicationProp("application.token");
-        appId = EnvironmentProps.getApplicationProp("application.appId");
-        appSecret = EnvironmentProps.getApplicationProp("application.appSecret");
+        domain = PropertyUtil.getApplicationProp("application.domain");
+        token = PropertyUtil.getApplicationProp("application.token");
+        appId = PropertyUtil.getApplicationProp("application.appId");
+        appSecret = PropertyUtil.getApplicationProp("application.appSecret");
     }
 
     /**

@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
 
-import pers.zcc.scm.common.util.EnvironmentProps;
+import pers.zcc.scm.common.util.AppEnviromentUtil;
 
 public class DBMigration {
 
@@ -20,9 +20,9 @@ public class DBMigration {
     public static void migrateDbByFlyway() {
         try {
 //            System.setProperty("spring.profiles.active", "dev");
-            String url = EnvironmentProps.getAppPropAsString("scm.datasource.jdbc.ds1.write.url", "");
-            String user = EnvironmentProps.getAppPropAsString("scm.datasource.jdbc.ds1.write.username", "");
-            String password = EnvironmentProps.getAppPropAsString("scm.datasource.jdbc.ds1.write.password", "");
+            String url = AppEnviromentUtil.getString("scm.datasource.jdbc.ds1.write.url", "");
+            String user = AppEnviromentUtil.getString("scm.datasource.jdbc.ds1.write.username", "");
+            String password = AppEnviromentUtil.getString("scm.datasource.jdbc.ds1.write.password", "");
             MysqlDataSource ds = new MysqlDataSource();
             ds.setUrl(url);
             ds.setUser(user);

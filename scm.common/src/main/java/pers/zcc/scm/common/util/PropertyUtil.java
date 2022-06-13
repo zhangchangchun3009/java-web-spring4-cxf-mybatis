@@ -13,9 +13,15 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class EnvironmentProps {
+/**
+ * The Class PropertyUtil is a convenient util to load property file from classpath
+ *
+ * @author zhangchangchun
+ * @Date 2022年6月13日
+ */
+public class PropertyUtil {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(EnvironmentProps.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PropertyUtil.class);
 
     private static Map<String, String> propCache = new HashMap<>(32);
 
@@ -26,7 +32,7 @@ public class EnvironmentProps {
     private static String baseDir;
 
     static {
-        String codePath = EnvironmentProps.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+        String codePath = PropertyUtil.class.getProtectionDomain().getCodeSource().getLocation().getPath();
         if (codePath.contains(".jar!")) {
             baseDir = codePath.substring(0, codePath.indexOf("!"));
             baseDir = baseDir.substring(0, baseDir.lastIndexOf("/"));
@@ -60,7 +66,7 @@ public class EnvironmentProps {
     public static Properties getProperties(String path) {
         Properties properties = new Properties();
         try {
-            properties.load(EnvironmentProps.class.getClassLoader().getResourceAsStream(path));
+            properties.load(PropertyUtil.class.getClassLoader().getResourceAsStream(path));
         } catch (Exception e) {
             LOGGER.error("loadAllProperties e,", e);
             return properties;

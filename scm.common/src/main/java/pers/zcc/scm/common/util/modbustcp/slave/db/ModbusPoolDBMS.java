@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionUsageException;
 
-import pers.zcc.scm.common.util.EnvironmentProps;
+import pers.zcc.scm.common.util.PropertyUtil;
 
 /**
  * modbus slave 数据池管理系统
@@ -77,9 +77,9 @@ public class ModbusPoolDBMS {
         }
     }
 
-    private static int useRDBConfig = EnvironmentProps.getAppPropAsInteger("scm.common.modbusslave.useRDB", 0);
+    private static int useRDBConfig = PropertyUtil.getAppPropAsInteger("scm.common.modbusslave.useRDB", 0);
 
-    private static long rdbPeriodConfig = EnvironmentProps.getAppPropAsLong("scm.common.modbusslave.rdbPeriod",
+    private static long rdbPeriodConfig = PropertyUtil.getAppPropAsLong("scm.common.modbusslave.rdbPeriod",
             10 * 60 * 1000);
 
     private static ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();

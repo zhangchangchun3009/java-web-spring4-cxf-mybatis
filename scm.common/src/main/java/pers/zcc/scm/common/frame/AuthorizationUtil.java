@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import pers.zcc.scm.common.user.vo.UserVO;
-import pers.zcc.scm.common.util.EnvironmentProps;
+import pers.zcc.scm.common.util.PropertyUtil;
 import pers.zcc.scm.common.util.JacksonUtil;
 import pers.zcc.scm.common.util.RSAUtil;
 import pers.zcc.scm.common.util.RandomUtil;
@@ -30,8 +30,8 @@ public class AuthorizationUtil {
     private static String appPublicKey;
 
     static {
-        appSecret = EnvironmentProps.getApplicationProp("application.appSecret");
-        appPublicKey = EnvironmentProps.getApplicationProp("application.appPublicKey");
+        appSecret = PropertyUtil.getApplicationProp("application.appSecret");
+        appPublicKey = PropertyUtil.getApplicationProp("application.appPublicKey");
     }
 
     public static String generateToken(Object param) {

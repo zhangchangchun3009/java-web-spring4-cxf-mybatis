@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
-import pers.zcc.scm.common.util.EnvironmentProps;
+import pers.zcc.scm.common.util.PropertyUtil;
 import pers.zcc.scm.common.util.JacksonUtil;
 import pers.zcc.scm.common.util.modbustcp.slave.db.ModbusPoolDBMS.ModbusPoolDB;
 
@@ -38,8 +38,8 @@ public class Serializer {
     private static String fileFullPath;
 
     static {
-        defaultFilePath = EnvironmentProps.getBaseDir();
-        fileDirPath = EnvironmentProps.getAppPropAsString("scm.common.modbusslave.serializeFilePath", defaultFilePath);
+        defaultFilePath = PropertyUtil.getBaseDir();
+        fileDirPath = PropertyUtil.getAppPropAsString("scm.common.modbusslave.serializeFilePath", defaultFilePath);
         fileDirPath = fileDirPath.endsWith("/") || fileDirPath.endsWith("\\") ? fileDirPath : fileDirPath + "/";
         fileFullPath = fileDirPath + STORE_FILE_NAME;
     }

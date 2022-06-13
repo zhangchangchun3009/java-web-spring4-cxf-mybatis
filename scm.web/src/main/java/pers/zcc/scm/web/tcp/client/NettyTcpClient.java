@@ -37,7 +37,7 @@ import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.handler.timeout.IdleStateHandler;
-import pers.zcc.scm.common.util.EnvironmentProps;
+import pers.zcc.scm.common.util.PropertyUtil;
 import pers.zcc.scm.common.util.JacksonUtil;
 import pers.zcc.scm.common.util.RSAUtil;
 import pers.zcc.scm.web.tcp.client.impl.TcpServerConfig;
@@ -68,7 +68,7 @@ public class NettyTcpClient {
 
     private static Charset charset = Charset.forName("UTF-8");
 
-    private static String serverPublicKey = EnvironmentProps.getApplicationProp("tcp.server.publicKey");
+    private static String serverPublicKey = PropertyUtil.getApplicationProp("tcp.server.publicKey");
 
     private static final byte[] HEARTBEAT = new byte[] { '\r', '\n' };
 
@@ -165,7 +165,7 @@ public class NettyTcpClient {
             LOGGER.error("writeCommand0", e);
         }
         String data = "&" + unitId + "&" + command + "&" + messageId + "&" + contentStr + "&" + timestamp + "&";
-        String privateKey = EnvironmentProps.getApplicationProp("tcp.client.privateKey");
+        String privateKey = PropertyUtil.getApplicationProp("tcp.client.privateKey");
         String sign = null;
         try {
             sign = RSAUtil.sign(data.getBytes(charset), privateKey);

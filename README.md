@@ -11,5 +11,7 @@
     if you need a war file, uncommon war plugin in '/scm.web/pom.xml'.
 # docker:
     ## build image: docker build --tag scm .
+    ## create network: docker network create scm-app
     ## run scm-mysql: docker run -d --network scm-app --network-alias mysql --name scm-mysql -v scm-mysql-data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=admin -e MYSQL_DATABASE=scm mysql:8.0.29
-    ## run scm: docker run -d -p 80:80 --network scm-app --network-alias scm --name scm scm:latest    
+    ## login on scm-mysql && create user && run sql scripts: docker exec -it scm-mysql mysql -u root -p
+    ## run scm: docker run -d -p 80:80 -p 443:443 --network scm-app --network-alias scm --name scm scm:latest    

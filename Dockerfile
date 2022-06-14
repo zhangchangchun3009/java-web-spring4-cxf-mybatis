@@ -28,3 +28,4 @@ ENV DS_MYSQL_DS1_READ1_USERNAME="develop"
 ENV DS_MYSQL_DS1_READ1_PASSWORD="admin"
 CMD java -jar $JAVA_OPTS -Dspring.profiles.active=$SPRING_PROFILES_ACTIVE -Dscm.datasource.jdbc.ds1.write.url=$DS_MYSQL_DS1_WRITE_URL -Dscm.datasource.jdbc.ds1.write.username=$DS_MYSQL_DS1_WRITE_USERNAME -Dscm.datasource.jdbc.ds1.write.password=$DS_MYSQL_DS1_WRITE_PASSWORD -Dscm.datasource.jdbc.ds1.read1.url=$DS_MYSQL_DS1_READ1_URL -Dscm.datasource.jdbc.ds1.read1.username=$DS_MYSQL_DS1_READ1_USERNAME -Dscm.datasource.jdbc.ds1.read1.password=$DS_MYSQL_DS1_READ1_PASSWORD scm.web.jar
 EXPOSE 80
+EXPOSE 443

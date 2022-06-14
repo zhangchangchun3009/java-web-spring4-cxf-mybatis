@@ -3,16 +3,17 @@ ARG MAVEN_VERSION=3.8.5-jdk-8
 ARG JDK_VERSION=8-alpine
 FROM --platform=linux/amd64 maven:${MAVEN_VERSION} AS maven_build
 WORKDIR /build
+COPY ./settings.xml ./.m2/
 COPY ./pom.xml .
 COPY ./scm.common/pom.xml ./scm.common/
 COPY ./scm.web/pom.xml ./scm.web/
 
-RUN mvn -f pom.xml -Dmaven.repo.local=./.m2 dependency:go-offline install
+RUN mvn -f pom.xml -s ./.m2/settings.xml -Dmaven.repo.local=./.m2 dependency:go-offline install
 
 COPY scm.common/src ./scm.common/src/
 COPY scm.web/src ./scm.web/src/
-RUN mvn clean package install -f ./scm.common/pom.xml -Dmaven.test.skip=true -Dmaven.repo.local=./.m2
-RUN mvn clean package install -f ./scm.web/pom.xml -P dev -Dmaven.test.skip=true -Dmaven.repo.local=./.m2
+RUN mvn clean package install -f ./scm.common/pom.xml -s ./.m2/settings.xml -Dmaven.test.skip=true -Dmaven.repo.local=./.m2
+RUN mvn clean package install -f ./scm.web/pom.xml -s ./.m2/settings.xml -P dev -Dmaven.test.skip=true -Dmaven.repo.local=./.m2
 
 FROM --platform=linux/amd64 openjdk:${JDK_VERSION} AS app_run
 WORKDIR /app

@@ -52,7 +52,6 @@ under the License.
    | Default: ${user.home}/.m2/repository
   <localRepository>/path/to/local/repo</localRepository>
   -->
-<localRepository>D:\JavaEEzhangchangchun\maven_repository\repository</localRepository>
   <!-- interactiveMode
    | This will determine whether maven prompts you when it needs input. If set to false,
    | maven will use a sensible default value, perhaps based on some other setting, for
@@ -160,7 +159,7 @@ under the License.
 	    <id>nexus-aliyun</id>
 	    <mirrorOf>*</mirrorOf>
 	    <name>Nexus aliyun</name>
-	    <url>http://maven.aliyun.com/nexus/content/groups/public</url>
+	    <url>https://maven.aliyun.com/nexus/content/groups/public</url>
 	</mirror>
   </mirrors>
 

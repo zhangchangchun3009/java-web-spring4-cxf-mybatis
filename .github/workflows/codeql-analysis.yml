@@ -74,7 +74,9 @@ jobs:
     #    uses a compiled language
 
     - run: |
-       mvn compile -P dev
+       mvn clean install -f pom.xml
+       mvn clean install -f ./scm.common/pom.xml
+       mvn clean install -f ./scm.web/pom.xml -P dev
      # make release
 
     - name: Perform CodeQL Analysis

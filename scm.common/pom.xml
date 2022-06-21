@@ -9,6 +9,50 @@
   <artifactId>scm.common</artifactId>
   <name>scm.common</name>
   <dependencies>
+    <dependency>
+        <groupId>org.apache.poi</groupId>
+        <artifactId>poi-ooxml</artifactId>
+    </dependency>
+    
+    <dependency>
+        <groupId>commons-fileupload</groupId>
+        <artifactId>commons-fileupload</artifactId>
+    </dependency>    
+    <dependency>
+        <groupId>com.digitalpetri.modbus</groupId>
+        <artifactId>modbus-master-tcp</artifactId>
+    </dependency>
+    
+    <dependency>
+        <groupId>com.digitalpetri.modbus</groupId>
+        <artifactId>modbus-slave-tcp</artifactId>
+    </dependency>
+    
+    <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient</artifactId>
+    </dependency>
+        
+    <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpcore</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.java-websocket</groupId>
+      <artifactId>Java-WebSocket</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.ehcache</groupId>
+        <artifactId>ehcache</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>com.lmax</groupId>
+        <artifactId>disruptor</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.mongodb</groupId>
+        <artifactId>mongo-java-driver</artifactId>
+    </dependency>
   </dependencies>
   <build>
     <finalName>scm.common</finalName>

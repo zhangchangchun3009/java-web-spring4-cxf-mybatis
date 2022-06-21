@@ -12,7 +12,9 @@ run class `scm.web/src/main/java/pers/zcc/scm/web/lauch/AppBootstrap.java`
 
 ---
 # deploy:    
-there are three package that could be deployed. recommended one is the `scm.web.jar` which is packaged by `spring-boot-maven-plugin`.another choice is the `scm.web.zip` file,unzip it and run the `startup(/shutdown).sh(/.bat)` in the `bin` folder.
+there are three packages that could be deployed. recommended one is the `scm.web.jar` which is packaged by `spring-boot-maven-plugin`.
+
+another choice is the `scm.web.zip` file,unzip it and run the `startup(/shutdown).sh(/.bat)` in the `bin` folder.
 
 if you need a war file, uncommon war plugin in `/scm.web/pom.xml`.
 
